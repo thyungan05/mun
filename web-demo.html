@@ -1,201 +1,173 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PVI Care Portal · Bản demo web</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PVI Admin Portal · Demo</title>
   <style>
-    :root {
-      --navy:#082c55; --navy-2:#0a3b70; --blue:#0877d1; --cyan:#13a7d9;
-      --bg:#f4f7fb; --card:#fff; --text:#17283b; --muted:#718096;
-      --border:#e4eaf1; --green:#18a66a; --orange:#f2a63b; --red:#e85b62;
-      --shadow:0 12px 32px rgba(28,59,91,.08);
-    }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif}
-    button,input,select{font:inherit}
-    button{cursor:pointer}
-    .app{min-height:100vh;display:grid;grid-template-columns:248px 1fr}
-    .sidebar{position:fixed;inset:0 auto 0 0;width:248px;padding:22px 16px;background:linear-gradient(180deg,var(--navy),#061d37);color:#d8e8f8;z-index:20}
-    .logo{display:flex;align-items:center;gap:11px;padding:0 8px 24px}
-    .logo-mark{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#0d8ee2,#14b9d3);color:#fff;font-size:18px;font-weight:900;box-shadow:0 8px 20px rgba(12,143,214,.28)}
-    .logo strong{display:block;color:#fff;font-size:17px}.logo small{color:#8fb4d7}
-    .nav-label{padding:15px 12px 7px;color:#6f98be;font-size:10px;font-weight:800;letter-spacing:1.2px}
-    .nav-btn{display:flex;align-items:center;gap:12px;width:100%;min-height:46px;margin:3px 0;padding:0 13px;border:0;border-radius:12px;background:transparent;color:#bad0e6;text-align:left}
-    .nav-btn:hover,.nav-btn.active{background:linear-gradient(90deg,#0a72c7,#0c8dd0);color:#fff;box-shadow:0 8px 18px rgba(0,87,160,.25)}
-    .nav-icon{width:24px;text-align:center;font-size:17px}.nav-badge{margin-left:auto;padding:2px 7px;border-radius:999px;background:#f24f64;color:#fff;font-size:9px}
-    .sidebar-footer{position:absolute;left:16px;right:16px;bottom:18px;padding:13px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(255,255,255,.05)}
-    .sidebar-footer strong{display:block;color:#fff;font-size:12px}.sidebar-footer small{color:#8fb4d7}
-    .main{grid-column:2;min-width:0}
-    .topbar{position:sticky;top:0;z-index:15;height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.94);backdrop-filter:blur(12px)}
-    .search{position:relative;width:min(390px,36vw)}.search input{width:100%;height:40px;padding:0 15px 0 39px;border:1px solid var(--border);border-radius:12px;background:#f7f9fc;outline:0}.search span{position:absolute;left:14px;top:10px;color:var(--muted)}
-    .user{display:flex;align-items:center;gap:11px}.user-copy{text-align:right}.user-copy strong,.user-copy small{display:block}.user-copy small{color:var(--muted);font-size:10px}
-    .avatar{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0d80d7,#13b3d7);color:#fff;font-weight:800}
-    .content{padding:28px 30px 45px;max-width:1600px;margin:auto}
-    .screen{display:none}.screen.active{display:block;animation:fade .22s ease}@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-    .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:22px}.page-head h1{margin:0 0 4px;font-size:25px}.page-head p{margin:0;color:var(--muted)}
-    .btn{min-height:40px;padding:0 15px;border:0;border-radius:11px;font-weight:700}.btn-primary{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;box-shadow:0 8px 18px rgba(8,119,209,.2)}.btn-soft{background:#eaf5ff;color:var(--blue)}.btn-outline{border:1px solid var(--blue);background:#fff;color:var(--blue)}
-    .hero{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(310px,.75fr);gap:18px;margin-bottom:18px}
-    .hero-banner{position:relative;min-height:260px;overflow:hidden;border-radius:20px;background:#0877d1;box-shadow:var(--shadow)}
-    .hero-banner img{width:100%;height:100%;position:absolute;object-fit:cover}.hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(4,35,72,.76),rgba(4,35,72,.07) 68%)}
-    .hero-copy{position:relative;z-index:2;width:57%;padding:37px;color:#fff}.hero-copy span{display:inline-block;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.16);font-size:10px}.hero-copy h2{margin:13px 0 8px;font-size:26px;line-height:1.22}.hero-copy p{margin:0 0 20px;color:#d8ecff;font-size:12px}
-    .member-mini{position:relative;overflow:hidden;padding:22px;border-radius:20px;background:linear-gradient(140deg,#052c62,#0879da 55%,#13b1d1);color:#fff;box-shadow:var(--shadow)}
-    .member-mini:after{content:"";position:absolute;width:190px;height:190px;right:-80px;bottom:-105px;border:1px solid rgba(255,255,255,.25);border-radius:50%;box-shadow:0 0 0 22px rgba(255,255,255,.06),0 0 0 45px rgba(255,255,255,.04)}
-    .member-mini h3{margin:34px 0 3px;font-size:18px}.member-mini p{margin:0;color:#bde7ff;font-size:11px}.member-mini .tier{font-size:10px;font-weight:800}.member-mini .points{position:absolute;right:20px;top:18px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.14);font-weight:800}
-    .progress{height:8px;margin:21px 0 7px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.18)}.progress i{display:block;width:56.67%;height:100%;border-radius:inherit;background:#fff}
-    .progress-copy{display:flex;justify-content:space-between;font-size:9px;color:#d8f3ff}
-    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
-    .kpi{padding:17px;border:1px solid var(--border);border-radius:16px;background:#fff;box-shadow:var(--shadow)}.kpi-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px}.kpi-icon{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#eaf5ff;font-size:16px}.kpi strong{display:block;margin:10px 0 3px;font-size:23px}.trend{font-size:10px;color:var(--green)}
-    .dashboard-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(330px,.7fr);gap:18px}
-    .panel{padding:19px;border:1px solid var(--border);border-radius:17px;background:#fff;box-shadow:var(--shadow)}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.panel h3{margin:0;font-size:15px}.panel-head select{padding:8px 10px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--muted);font-size:10px}
-    .chart{height:225px;display:flex;align-items:flex-end;gap:12px;padding:20px 8px 24px;border-left:1px solid #edf1f5;border-bottom:1px solid #edf1f5;background:repeating-linear-gradient(to top,transparent 0 44px,#edf1f5 45px)}
-    .bar-wrap{flex:1;height:100%;display:flex;align-items:flex-end;justify-content:center;gap:4px;position:relative}.bar{width:13px;border-radius:5px 5px 0 0;background:linear-gradient(#12a9d7,#0877d1)}.bar.alt{background:linear-gradient(#82dfba,#1aad72)}.bar-wrap small{position:absolute;bottom:-21px;color:var(--muted);font-size:8px}
-    .task{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid var(--border)}.task:last-child{border:0}.task-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#edf6ff}.task-copy{flex:1}.task-copy strong,.task-copy small{display:block}.task-copy strong{font-size:12px}.task-copy small{color:var(--muted);font-size:9px}.task button{border:0;background:transparent;color:var(--blue);font-weight:800}
-    .table-card{overflow:hidden;border:1px solid var(--border);border-radius:17px;background:#fff;box-shadow:var(--shadow)}table{width:100%;border-collapse:collapse}th,td{padding:14px 16px;border-bottom:1px solid var(--border);text-align:left;font-size:11px}th{background:#f8fafc;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.5px}.status{display:inline-block;padding:4px 8px;border-radius:999px;background:#e9f9f1;color:var(--green);font-size:9px;font-weight:800}.status.warning{background:#fff5df;color:#b97600}
-    .cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.product{overflow:hidden;border:1px solid var(--border);border-radius:17px;background:#fff;box-shadow:var(--shadow)}.product-visual{height:125px;display:grid;place-items:center;background:linear-gradient(135deg,#e7f5ff,#f3fbff);font-size:50px}.product-body{padding:17px}.product h3{margin:0 0 7px;font-size:15px}.product p{min-height:38px;margin:0 0 14px;color:var(--muted);font-size:10px}.product-bottom{display:flex;align-items:center;justify-content:space-between}.price{color:var(--blue);font-weight:800}
-    .modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(6,25,47,.62);backdrop-filter:blur(3px)}.modal.open{display:flex}.modal-card{width:min(850px,100%);max-height:90vh;overflow:auto;border-radius:20px;background:#fff;box-shadow:0 28px 70px rgba(0,0,0,.24)}.modal-head{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--border);background:#fff;z-index:2}.modal-head h2{margin:0;font-size:18px}.close{width:35px;height:35px;border:0;border-radius:10px;background:#f0f3f7}.modal-body{padding:22px}
-    .choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.choice{padding:18px;border:1px solid var(--border);border-radius:15px;background:#fff;text-align:left}.choice:hover{border-color:var(--blue);box-shadow:0 0 0 3px #e8f4ff}.choice strong,.choice small{display:block}.choice strong{margin:9px 0 5px}.choice small{color:var(--muted)}
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field label{display:block;margin-bottom:6px;font-size:10px;font-weight:800}.field input,.field select{width:100%;height:42px;padding:0 12px;border:1px solid var(--border);border-radius:10px;outline:0}.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #e8f4ff}.span-2{grid-column:span 2}
+    :root{--navy:#082c55;--navy2:#061d37;--blue:#0878d1;--cyan:#12a9d8;--bg:#f4f7fb;--card:#fff;--text:#17283b;--muted:#718096;--border:#e3eaf1;--green:#18a66a;--orange:#ee9e2d;--red:#e5525c;--purple:#7658d8;--shadow:0 12px 30px rgba(22,55,88,.08)}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 Inter,Segoe UI,Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}
+    .sidebar{position:fixed;inset:0 auto 0 0;width:250px;padding:22px 16px;background:linear-gradient(180deg,var(--navy),var(--navy2));color:#d8e8f8;z-index:20}.brand{display:flex;align-items:center;gap:11px;padding:0 8px 25px}.brand-mark{display:grid;place-items:center;width:43px;height:43px;border-radius:13px;background:linear-gradient(135deg,#0d8ee2,#14b9d3);color:#fff;font-size:18px;font-weight:900;box-shadow:0 8px 20px rgba(12,143,214,.28)}.brand strong,.brand small{display:block}.brand strong{color:#fff;font-size:17px}.brand small{color:#86acd0;font-size:10px}.nav-label{padding:15px 12px 7px;color:#6992b8;font-size:9px;font-weight:900;letter-spacing:1.2px}.nav-btn{display:flex;align-items:center;gap:12px;width:100%;min-height:46px;margin:3px 0;padding:0 13px;border:0;border-radius:12px;background:transparent;color:#bdd2e6;text-align:left}.nav-btn:hover,.nav-btn.active{background:linear-gradient(90deg,#086fc2,#0c8fd1);color:#fff;box-shadow:0 8px 18px rgba(0,87,160,.25)}.nav-icon{width:24px;text-align:center;font-size:17px}.badge{margin-left:auto;padding:2px 7px;border-radius:999px;background:#f04e62;color:#fff;font-size:9px}.sidebar-foot{position:absolute;left:16px;right:16px;bottom:18px;padding:13px;border:1px solid rgba(255,255,255,.1);border-radius:13px;background:rgba(255,255,255,.05)}.sidebar-foot strong,.sidebar-foot small{display:block}.sidebar-foot strong{color:#fff;font-size:11px}.sidebar-foot small{color:#85a9ca;font-size:9px}
+    .main{grid-column:2;min-width:0}.topbar{position:sticky;top:0;z-index:15;height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 30px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.95);backdrop-filter:blur(10px)}.search{position:relative;width:min(410px,38vw)}.search input{width:100%;height:41px;padding:0 15px 0 40px;border:1px solid var(--border);border-radius:12px;background:#f7f9fc;outline:0}.search span{position:absolute;left:14px;top:10px;color:var(--muted)}.admin{display:flex;align-items:center;gap:11px}.admin-copy{text-align:right}.admin-copy strong,.admin-copy small{display:block}.admin-copy small{color:var(--muted);font-size:9px}.avatar{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;font-weight:900}
+    .content{max-width:1600px;margin:auto;padding:28px 30px 45px}.screen{display:none}.screen.active{display:block;animation:fade .2s ease}@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:22px}.page-head h1{margin:0 0 4px;font-size:25px}.page-head p{margin:0;color:var(--muted)}.toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.select,.input{height:40px;padding:0 12px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--text);outline:0}.btn{min-height:40px;padding:0 15px;border:0;border-radius:10px;font-weight:800;font-size:11px}.btn-primary{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;box-shadow:0 8px 18px rgba(8,119,209,.2)}.btn-soft{background:#eaf5ff;color:var(--blue)}.btn-outline{border:1px solid var(--blue);background:#fff;color:var(--blue)}.btn-danger{background:#fff0f1;color:var(--red)}.btn-success{background:#e9f8f1;color:var(--green)}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.kpi{padding:17px;border:1px solid var(--border);border-radius:16px;background:#fff;box-shadow:var(--shadow)}.kpi-top{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:10px}.kpi-icon{display:grid;place-items:center;width:35px;height:35px;border-radius:10px;background:#eaf5ff;font-size:17px}.kpi strong{display:block;margin:9px 0 3px;font-size:23px}.trend{color:var(--green);font-size:9px}.trend.down{color:var(--red)}
+    .grid-main{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(330px,.7fr);gap:18px;margin-bottom:18px}.panel{padding:19px;border:1px solid var(--border);border-radius:17px;background:#fff;box-shadow:var(--shadow)}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.panel-head h2,.panel-head h3{margin:0;font-size:15px}.legend{display:flex;gap:14px;color:var(--muted);font-size:9px}.legend i{display:inline-block;width:8px;height:8px;margin-right:5px;border-radius:2px;background:var(--blue)}.legend i.alt{background:var(--green)}
+    .chart{height:245px;display:flex;align-items:flex-end;gap:14px;padding:20px 10px 27px;border-left:1px solid #edf1f5;border-bottom:1px solid #edf1f5;background:repeating-linear-gradient(to top,transparent 0 48px,#edf1f5 49px)}.month-bars{position:relative;display:flex;flex:1;height:100%;align-items:flex-end;justify-content:center;gap:5px}.bar{width:17px;border-radius:5px 5px 0 0;background:linear-gradient(#13a8d7,#0878d1);transition:.2s}.bar.prev{background:linear-gradient(#8cdebd,#19a96d)}.month-bars:hover .bar{filter:brightness(1.08)}.month-bars small{position:absolute;bottom:-22px;color:var(--muted);font-size:8px}
+    .donut-wrap{display:grid;grid-template-columns:145px 1fr;align-items:center;gap:18px}.donut{width:138px;height:138px;display:grid;place-items:center;border-radius:50%;background:conic-gradient(var(--blue) 0 46%,var(--green) 46% 72%,var(--orange) 72% 88%,var(--purple) 88%);position:relative}.donut:after{content:"";position:absolute;width:88px;height:88px;border-radius:50%;background:#fff}.donut strong{position:relative;z-index:1;font-size:18px}.donut-list{display:grid;gap:10px}.donut-item{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:10px}.dot{width:8px;height:8px;display:inline-block;margin-right:6px;border-radius:3px}
+    .table-card{overflow:hidden;border:1px solid var(--border);border-radius:17px;background:#fff;box-shadow:var(--shadow)}.table-top{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:17px 18px;border-bottom:1px solid var(--border)}.table-top h2{margin:0;font-size:15px}.table-scroll{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th,td{padding:13px 15px;border-bottom:1px solid var(--border);text-align:left;font-size:10px}th{background:#f8fafc;color:var(--muted);font-size:8px;text-transform:uppercase;letter-spacing:.55px}.status{display:inline-block;padding:4px 8px;border-radius:999px;font-size:8px;font-weight:900}.status.active,.status.approved{background:#e8f8f0;color:var(--green)}.status.pending{background:#fff4db;color:#b87500}.status.rejected{background:#fff0f1;color:var(--red)}.action-link{padding:0;border:0;background:transparent;color:var(--blue);font-size:10px;font-weight:900}.product-name{display:flex;align-items:center;gap:8px}.product-icon{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#eaf5ff;font-size:15px}
+    .claim-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}.summary-card{padding:16px;border-radius:15px;background:#fff;border:1px solid var(--border);box-shadow:var(--shadow)}.summary-card span,.summary-card strong{display:block}.summary-card span{color:var(--muted);font-size:10px}.summary-card strong{margin-top:6px;font-size:20px}
+    .modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(5,24,46,.65);backdrop-filter:blur(3px)}.modal.open{display:flex}.modal-card{width:min(900px,100%);max-height:91vh;overflow:auto;border-radius:20px;background:#fff;box-shadow:0 28px 70px rgba(0,0,0,.25)}.modal-head{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);background:#fff}.modal-head h2{margin:0;font-size:18px}.close{width:35px;height:35px;border:0;border-radius:10px;background:#f0f3f7}.modal-body{padding:22px}.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.detail-box{padding:14px;border:1px solid var(--border);border-radius:13px;background:#fafcff}.detail-box span,.detail-box strong{display:block}.detail-box span{color:var(--muted);font-size:9px}.detail-box strong{margin-top:5px;font-size:12px}.span-2{grid-column:span 2}.document-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.document{padding:14px;border:1px solid var(--border);border-radius:12px;background:#fff;text-align:center;font-size:10px}.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:19px;padding-top:17px;border-top:1px solid var(--border)}
     .toast{position:fixed;right:25px;bottom:25px;z-index:200;padding:13px 17px;border-radius:12px;background:#102a45;color:#fff;box-shadow:var(--shadow);opacity:0;transform:translateY(15px);pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:none}
-    @media(max-width:1050px){.app{grid-template-columns:82px 1fr}.sidebar{width:82px}.logo-copy,.nav-btn span:not(.nav-icon),.nav-label,.sidebar-footer{display:none}.nav-btn{justify-content:center}.main{grid-column:2}.hero,.dashboard-grid{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:720px){.app{display:block}.sidebar{display:none}.main{grid-column:auto}.topbar{padding:0 16px}.search{display:none}.content{padding:20px 14px}.kpis,.cards-grid,.choice-grid,.form-grid{grid-template-columns:1fr}.span-2{grid-column:auto}.hero-copy{width:82%}.page-head{align-items:flex-start;flex-direction:column}}
+    @media(max-width:1080px){.app{grid-template-columns:82px 1fr}.sidebar{width:82px}.brand-copy,.nav-btn span:not(.nav-icon),.nav-label,.sidebar-foot{display:none}.nav-btn{justify-content:center}.kpis{grid-template-columns:repeat(2,1fr)}.grid-main{grid-template-columns:1fr}}@media(max-width:720px){.app{display:block}.sidebar{display:none}.main{grid-column:auto}.topbar{padding:0 15px}.search{display:none}.content{padding:20px 13px}.kpis,.claim-summary{grid-template-columns:1fr}.page-head{align-items:flex-start;flex-direction:column}.detail-grid,.document-list{grid-template-columns:1fr}.span-2{grid-column:auto}}
   </style>
 </head>
 <body>
   <div class="app">
     <aside class="sidebar">
-      <div class="logo"><div class="logo-mark">PVI</div><div class="logo-copy"><strong>PVI Care</strong><small>Customer Portal</small></div></div>
-      <div class="nav-label">TRUNG TÂM</div>
-      <button class="nav-btn active" data-screen="dashboard"><span class="nav-icon">⌂</span><span>Tổng quan</span></button>
-      <button class="nav-btn" data-screen="products"><span class="nav-icon">🛡</span><span>Sản phẩm bảo hiểm</span></button>
-      <button class="nav-btn" data-screen="policies"><span class="nav-icon">▤</span><span>Hợp đồng của tôi</span></button>
-      <button class="nav-btn" data-screen="claims"><span class="nav-icon">☂</span><span>Bồi thường</span><span class="nav-badge">1</span></button>
-      <div class="nav-label">ĐẶC QUYỀN</div>
-      <button class="nav-btn" data-screen="rewards"><span class="nav-icon">🎁</span><span>Ưu đãi & Điểm</span></button>
-      <button class="nav-btn open-quote"><span class="nav-icon">🧮</span><span>Tính phí</span></button>
-      <div class="sidebar-footer"><strong>Hotline bồi thường 24/7</strong><small>1900 54 54 58</small></div>
+      <div class="brand"><div class="brand-mark">PVI</div><div class="brand-copy"><strong>PVI Admin</strong><small>Insurance Management</small></div></div>
+      <div class="nav-label">ĐIỀU HÀNH</div>
+      <button class="nav-btn active" data-screen="dashboard"><span class="nav-icon">▦</span><span>Tổng quan</span></button>
+      <button class="nav-btn" data-screen="products"><span class="nav-icon">🛡</span><span>Hiệu quả sản phẩm</span></button>
+      <button class="nav-btn" data-screen="customers"><span class="nav-icon">👥</span><span>Khách hàng</span></button>
+      <button class="nav-btn" data-screen="claims"><span class="nav-icon">☂</span><span>Yêu cầu bồi thường</span><span class="badge" id="claim-badge">4</span></button>
+      <div class="nav-label">HỆ THỐNG</div>
+      <button class="nav-btn demo"><span class="nav-icon">🎟</span><span>Voucher & ưu đãi</span></button>
+      <button class="nav-btn demo"><span class="nav-icon">⚙</span><span>Cấu hình nghiệp vụ</span></button>
+      <div class="sidebar-foot"><strong>Trung tâm vận hành PVI</strong><small>Dữ liệu cập nhật lúc 13:55</small></div>
     </aside>
 
     <main class="main">
       <header class="topbar">
-        <div class="search"><span>⌕</span><input placeholder="Tìm hợp đồng, sản phẩm, yêu cầu..." /></div>
-        <div class="user"><div class="user-copy"><strong>Trần Ngọc Thùy Ngân</strong><small>Hạng Member · 85 điểm</small></div><div class="avatar">NN</div></div>
+        <div class="search"><span>⌕</span><input placeholder="Tìm khách hàng, hợp đồng, hồ sơ bồi thường..."></div>
+        <div class="admin"><div class="admin-copy"><strong>Nguyễn Minh Anh</strong><small>Quản trị viên nghiệp vụ</small></div><div class="avatar">MA</div></div>
       </header>
       <div class="content">
         <section id="screen-dashboard" class="screen active">
-          <div class="page-head"><div><h1>Xin chào, Ngân 👋</h1><p>Tổng quan quyền lợi bảo hiểm và các việc cần quan tâm hôm nay.</p></div><button class="btn btn-primary open-quote">＋ Tính phí bảo hiểm</button></div>
-          <div class="hero">
-            <div class="hero-banner"><img src="images/bao_hiem_xe_o_to_pvi.png" alt="Bảo hiểm ô tô PVI"><div class="hero-overlay"></div><div class="hero-copy"><span>BẢO VỆ XE TOÀN DIỆN</span><h2>An tâm trên mọi hành trình cùng PVI</h2><p>Quyền lợi linh hoạt, mạng lưới garage liên kết trên toàn quốc và hỗ trợ 24/7.</p><button class="btn btn-primary open-quote">Nhận báo phí</button></div></div>
-            <div class="member-mini"><span class="tier">THẺ THÀNH VIÊN PVI CARE</span><span class="points">⭐ 85 điểm</span><h3>Trần Ngọc Thùy Ngân</h3><p>Member · PVC •••• 0726</p><div class="progress"><i></i></div><div class="progress-copy"><span>Member</span><span>Còn 65 điểm lên Silver</span></div></div>
+          <div class="page-head">
+            <div><h1>Dashboard kinh doanh bảo hiểm</h1><p>Theo dõi lượt mua, doanh thu phí và hiệu quả sản phẩm toàn hệ thống.</p></div>
+            <div class="toolbar"><select class="select month-filter"><option value="7">Tháng 07/2026</option><option value="6">Tháng 06/2026</option><option value="5">Tháng 05/2026</option></select><button class="btn btn-outline demo">Xuất báo cáo</button></div>
           </div>
           <div class="kpis">
-            <div class="kpi"><div class="kpi-top"><span>Hợp đồng hiệu lực</span><span class="kpi-icon">📄</span></div><strong>02</strong><span class="trend">Đang được bảo vệ</span></div>
-            <div class="kpi"><div class="kpi-top"><span>Tổng phí năm nay</span><span class="kpi-icon">💳</span></div><strong>8,45 triệu</strong><span class="trend">Đã thanh toán đầy đủ</span></div>
-            <div class="kpi"><div class="kpi-top"><span>Yêu cầu bồi thường</span><span class="kpi-icon">☂</span></div><strong>01</strong><span class="trend">Đang xử lý hồ sơ</span></div>
-            <div class="kpi"><div class="kpi-top"><span>Điểm PVI Care</span><span class="kpi-icon">⭐</span></div><strong>85</strong><span class="trend">+20 điểm tháng này</span></div>
+            <div class="kpi"><div class="kpi-top"><span>Tổng lượt mua</span><span class="kpi-icon">🛒</span></div><strong id="kpi-orders">1.284</strong><span class="trend">↑ 14,8% so với tháng trước</span></div>
+            <div class="kpi"><div class="kpi-top"><span>Tổng phí bảo hiểm</span><span class="kpi-icon">₫</span></div><strong id="kpi-revenue">9,82 tỷ</strong><span class="trend">↑ 11,2% so với tháng trước</span></div>
+            <div class="kpi"><div class="kpi-top"><span>Khách hàng mới</span><span class="kpi-icon">👤</span></div><strong id="kpi-new">846</strong><span class="trend">↑ 9,5% so với tháng trước</span></div>
+            <div class="kpi"><div class="kpi-top"><span>Yêu cầu bồi thường</span><span class="kpi-icon">☂</span></div><strong id="kpi-claims">76</strong><span class="trend down">4 hồ sơ đang chờ duyệt</span></div>
           </div>
-          <div class="dashboard-grid">
-            <div class="panel"><div class="panel-head"><h3>Chi phí bảo hiểm theo tháng</h3><select><option>6 tháng gần đây</option></select></div><div class="chart">
-              <div class="bar-wrap"><i class="bar" style="height:35%"></i><i class="bar alt" style="height:18%"></i><small>T2</small></div><div class="bar-wrap"><i class="bar" style="height:48%"></i><i class="bar alt" style="height:25%"></i><small>T3</small></div><div class="bar-wrap"><i class="bar" style="height:40%"></i><i class="bar alt" style="height:32%"></i><small>T4</small></div><div class="bar-wrap"><i class="bar" style="height:70%"></i><i class="bar alt" style="height:42%"></i><small>T5</small></div><div class="bar-wrap"><i class="bar" style="height:55%"></i><i class="bar alt" style="height:51%"></i><small>T6</small></div><div class="bar-wrap"><i class="bar" style="height:88%"></i><i class="bar alt" style="height:60%"></i><small>T7</small></div>
-            </div></div>
-            <div class="panel"><div class="panel-head"><h3>Việc cần xử lý</h3><button class="btn btn-soft">Xem tất cả</button></div>
-              <div class="task"><span class="task-icon">⏰</span><span class="task-copy"><strong>Hợp đồng sắp hết hạn</strong><small>Xe 30A-123.45 · còn 15 ngày</small></span><button>Gia hạn</button></div>
-              <div class="task"><span class="task-icon">📷</span><span class="task-copy"><strong>Bổ sung ảnh tổn thất</strong><small>HSBT-260726 · thiếu 2 ảnh</small></span><button>Bổ sung</button></div>
-              <div class="task"><span class="task-icon">🎟</span><span class="task-copy"><strong>Voucher sắp hết hạn</strong><small>Giảm 10% TNDS · còn 5 ngày</small></span><button>Dùng ngay</button></div>
+          <div class="grid-main">
+            <div class="panel">
+              <div class="panel-head"><h2>So sánh lượt mua theo tháng</h2><div class="legend"><span><i></i>Năm 2026</span><span><i class="alt"></i>Năm 2025</span></div></div>
+              <div class="chart" id="purchase-chart">
+                <div class="month-bars"><i class="bar" style="height:42%"></i><i class="bar prev" style="height:34%"></i><small>T1</small></div>
+                <div class="month-bars"><i class="bar" style="height:48%"></i><i class="bar prev" style="height:37%"></i><small>T2</small></div>
+                <div class="month-bars"><i class="bar" style="height:55%"></i><i class="bar prev" style="height:43%"></i><small>T3</small></div>
+                <div class="month-bars"><i class="bar" style="height:64%"></i><i class="bar prev" style="height:51%"></i><small>T4</small></div>
+                <div class="month-bars"><i class="bar" style="height:72%"></i><i class="bar prev" style="height:59%"></i><small>T5</small></div>
+                <div class="month-bars"><i class="bar" style="height:78%"></i><i class="bar prev" style="height:63%"></i><small>T6</small></div>
+                <div class="month-bars"><i class="bar" style="height:91%"></i><i class="bar prev" style="height:70%"></i><small>T7</small></div>
+                <div class="month-bars"><i class="bar" style="height:0"></i><i class="bar prev" style="height:76%"></i><small>T8</small></div>
+                <div class="month-bars"><i class="bar" style="height:0"></i><i class="bar prev" style="height:67%"></i><small>T9</small></div>
+                <div class="month-bars"><i class="bar" style="height:0"></i><i class="bar prev" style="height:79%"></i><small>T10</small></div>
+                <div class="month-bars"><i class="bar" style="height:0"></i><i class="bar prev" style="height:84%"></i><small>T11</small></div>
+                <div class="month-bars"><i class="bar" style="height:0"></i><i class="bar prev" style="height:88%"></i><small>T12</small></div>
+              </div>
             </div>
+            <div class="panel">
+              <div class="panel-head"><h2>Cơ cấu lượt mua</h2><select class="select month-filter"><option value="7">Tháng 07</option><option value="6">Tháng 06</option></select></div>
+              <div class="donut-wrap"><div class="donut"><strong>1.284</strong></div><div class="donut-list">
+                <div class="donut-item"><span><i class="dot" style="background:var(--blue)"></i>TNDS ô tô</span><strong>46%</strong></div>
+                <div class="donut-item"><span><i class="dot" style="background:var(--green)"></i>Vật chất xe</span><strong>26%</strong></div>
+                <div class="donut-item"><span><i class="dot" style="background:var(--orange)"></i>Du lịch</span><strong>16%</strong></div>
+                <div class="donut-item"><span><i class="dot" style="background:var(--purple)"></i>Khác</span><strong>12%</strong></div>
+              </div></div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="table-top"><h2>Hiệu quả theo gói bảo hiểm</h2><button class="btn btn-soft" data-screen-jump="products">Xem báo cáo chi tiết</button></div>
+            <div class="table-scroll"><table><thead><tr><th>Gói bảo hiểm</th><th>Lượt mua</th><th>Khách hàng mới</th><th>Tổng phí</th><th>Phí trung bình</th><th>So với T6</th></tr></thead><tbody id="dashboard-products">
+              <tr><td><div class="product-name"><span class="product-icon">📄</span><strong>TNDS ô tô bắt buộc</strong></div></td><td>592</td><td>418</td><td>392.600.000đ</td><td>663.176đ</td><td><span class="trend">↑ 18,4%</span></td></tr>
+              <tr><td><div class="product-name"><span class="product-icon">🚙</span><strong>Vật chất xe ô tô</strong></div></td><td>334</td><td>186</td><td>7.684.000.000đ</td><td>23.005.988đ</td><td><span class="trend">↑ 12,1%</span></td></tr>
+              <tr><td><div class="product-name"><span class="product-icon">✈</span><strong>Bảo hiểm du lịch</strong></div></td><td>205</td><td>151</td><td>246.000.000đ</td><td>1.200.000đ</td><td><span class="trend down">↓ 3,2%</span></td></tr>
+              <tr><td><div class="product-name"><span class="product-icon">❤</span><strong>Bảo hiểm con người</strong></div></td><td>153</td><td>91</td><td>1.497.000.000đ</td><td>9.784.314đ</td><td><span class="trend">↑ 6,8%</span></td></tr>
+            </tbody></table></div>
           </div>
         </section>
 
         <section id="screen-products" class="screen">
-          <div class="page-head"><div><h1>Sản phẩm bảo hiểm</h1><p>Lựa chọn giải pháp bảo vệ phù hợp với bạn và gia đình.</p></div><button class="btn btn-primary open-quote">Tính phí nhanh</button></div>
-          <div class="cards-grid">
-            <article class="product"><div class="product-visual">🚙</div><div class="product-body"><h3>Vật chất xe ô tô</h3><p>Bảo vệ trước đâm va, lật đổ, cháy nổ và nhiều rủi ro bất ngờ.</p><div class="product-bottom"><span class="price">Từ 0,99%</span><button class="btn btn-soft open-quote">Tính phí</button></div></div></article>
-            <article class="product"><div class="product-visual">📄</div><div class="product-body"><h3>TNDS ô tô bắt buộc</h3><p>Mua trực tuyến nhanh, nhận giấy chứng nhận điện tử.</p><div class="product-bottom"><span class="price">Theo quy định</span><button class="btn btn-soft open-quote">Mua ngay</button></div></div></article>
-            <article class="product"><div class="product-visual">✈️</div><div class="product-body"><h3>Bảo hiểm du lịch</h3><p>Đồng hành trong các chuyến đi trong nước và quốc tế.</p><div class="product-bottom"><span class="price">Từ 98.000đ</span><button class="btn btn-soft demo">Chi tiết</button></div></div></article>
-          </div>
+          <div class="page-head"><div><h1>Hiệu quả sản phẩm bảo hiểm</h1><p>Phân tích số lượt mua và tổng phí của từng gói.</p></div><div class="toolbar"><select class="select"><option>Tháng 07/2026</option><option>Tháng 06/2026</option></select><select class="select"><option>Tất cả sản phẩm</option><option>Xe cơ giới</option><option>Con người</option><option>Du lịch</option></select><button class="btn btn-outline demo">Xuất Excel</button></div></div>
+          <div class="kpis"><div class="kpi"><div class="kpi-top"><span>Sản phẩm đang bán</span><span class="kpi-icon">🛡</span></div><strong>12</strong><span class="trend">4 nhóm sản phẩm</span></div><div class="kpi"><div class="kpi-top"><span>Sản phẩm bán chạy</span><span class="kpi-icon">🏆</span></div><strong style="font-size:17px">TNDS ô tô</strong><span class="trend">592 lượt mua</span></div><div class="kpi"><div class="kpi-top"><span>Doanh thu cao nhất</span><span class="kpi-icon">₫</span></div><strong style="font-size:17px">Vật chất xe</strong><span class="trend">7,68 tỷ đồng</span></div><div class="kpi"><div class="kpi-top"><span>Tỷ lệ tái tục</span><span class="kpi-icon">↻</span></div><strong>68,2%</strong><span class="trend">↑ 4,1%</span></div></div>
+          <div class="table-card"><div class="table-top"><h2>Danh sách sản phẩm</h2><input class="input" placeholder="Tìm tên gói bảo hiểm"></div><div class="table-scroll"><table><thead><tr><th>Gói bảo hiểm</th><th>Nhóm</th><th>Lượt mua</th><th>Tổng phí</th><th>KH mới</th><th>Tái tục</th><th>Trạng thái</th><th></th></tr></thead><tbody>
+            <tr><td><div class="product-name"><span class="product-icon">📄</span><strong>TNDS ô tô bắt buộc</strong></div></td><td>Xe cơ giới</td><td>592</td><td>392,6 triệu</td><td>418</td><td>62%</td><td><span class="status active">Đang bán</span></td><td><button class="action-link demo">Chi tiết</button></td></tr>
+            <tr><td><div class="product-name"><span class="product-icon">🚙</span><strong>Vật chất xe ô tô</strong></div></td><td>Xe cơ giới</td><td>334</td><td>7,684 tỷ</td><td>186</td><td>74%</td><td><span class="status active">Đang bán</span></td><td><button class="action-link demo">Chi tiết</button></td></tr>
+            <tr><td><div class="product-name"><span class="product-icon">✈</span><strong>Du lịch quốc tế</strong></div></td><td>Du lịch</td><td>205</td><td>246 triệu</td><td>151</td><td>31%</td><td><span class="status active">Đang bán</span></td><td><button class="action-link demo">Chi tiết</button></td></tr>
+            <tr><td><div class="product-name"><span class="product-icon">❤</span><strong>Tai nạn cá nhân</strong></div></td><td>Con người</td><td>153</td><td>1,497 tỷ</td><td>91</td><td>66%</td><td><span class="status active">Đang bán</span></td><td><button class="action-link demo">Chi tiết</button></td></tr>
+          </tbody></table></div></div>
         </section>
 
-        <section id="screen-policies" class="screen">
-          <div class="page-head"><div><h1>Hợp đồng của tôi</h1><p>Tra cứu hợp đồng và giấy chứng nhận bảo hiểm.</p></div><button class="btn btn-primary open-quote">Mua thêm bảo hiểm</button></div>
-          <div class="table-card"><table><thead><tr><th>Mã hợp đồng</th><th>Sản phẩm</th><th>Đối tượng</th><th>Hiệu lực</th><th>Phí</th><th>Trạng thái</th></tr></thead><tbody>
-            <tr><td><strong>PVI-OTO-260715</strong></td><td>Vật chất xe ô tô</td><td>30A-123.45</td><td>15/07/2026 – 14/07/2027</td><td>7.950.000đ</td><td><span class="status">Đang hiệu lực</span></td></tr>
-            <tr><td><strong>PVI-TNDS-260715</strong></td><td>TNDS ô tô</td><td>30A-123.45</td><td>15/07/2026 – 14/07/2027</td><td>493.700đ</td><td><span class="status">Đang hiệu lực</span></td></tr>
-            <tr><td><strong>PVI-DL-250802</strong></td><td>Du lịch quốc tế</td><td>Nguyễn Ngân</td><td>02/08/2025 – 12/08/2025</td><td>245.000đ</td><td><span class="status warning">Đã hết hạn</span></td></tr>
-          </tbody></table></div>
+        <section id="screen-customers" class="screen">
+          <div class="page-head"><div><h1>Quản lý khách hàng</h1><p>Thông tin khách hàng đang sử dụng dịch vụ bảo hiểm PVI.</p></div><div class="toolbar"><select class="select"><option>Tất cả sản phẩm</option><option>TNDS ô tô</option><option>Vật chất xe</option></select><select class="select"><option>Tất cả trạng thái</option><option>Đang hiệu lực</option><option>Sắp hết hạn</option></select><button class="btn btn-outline demo">Xuất danh sách</button></div></div>
+          <div class="table-card"><div class="table-top"><h2>6.842 khách hàng</h2><input class="input" placeholder="Tìm tên, SĐT, biển số xe..."></div><div class="table-scroll"><table><thead><tr><th>Khách hàng</th><th>Liên hệ</th><th>Gói đang sử dụng</th><th>Đối tượng BH</th><th>Tổng phí</th><th>Ngày hết hạn</th><th>Trạng thái</th><th></th></tr></thead><tbody>
+            <tr><td><strong>Trần Ngọc Thùy Ngân</strong><br><small>KH-26071508</small></td><td>0912 345 678<br>ngan***@gmail.com</td><td>Vật chất xe, TNDS ô tô</td><td>30A-123.45</td><td>8.443.700đ</td><td>14/07/2027</td><td><span class="status active">Đang hiệu lực</span></td><td><button class="action-link customer-detail">Xem hồ sơ</button></td></tr>
+            <tr><td><strong>Nguyễn Hoàng Nam</strong><br><small>KH-26070241</small></td><td>0988 222 555<br>nam***@outlook.com</td><td>Vật chất xe</td><td>51K-889.12</td><td>12.850.000đ</td><td>02/08/2026</td><td><span class="status pending">Sắp hết hạn</span></td><td><button class="action-link customer-detail">Xem hồ sơ</button></td></tr>
+            <tr><td><strong>Lê Thanh Hà</strong><br><small>KH-26061892</small></td><td>0903 777 888<br>ha***@gmail.com</td><td>Du lịch quốc tế</td><td>Cá nhân</td><td>1.280.000đ</td><td>18/09/2026</td><td><span class="status active">Đang hiệu lực</span></td><td><button class="action-link customer-detail">Xem hồ sơ</button></td></tr>
+          </tbody></table></div></div>
         </section>
 
         <section id="screen-claims" class="screen">
-          <div class="page-head"><div><h1>Hồ sơ bồi thường</h1><p>Theo dõi tiến độ xử lý và bổ sung chứng từ.</p></div><button class="btn btn-primary demo">＋ Khai báo tổn thất</button></div>
-          <div class="table-card"><table><thead><tr><th>Mã hồ sơ</th><th>Hợp đồng</th><th>Sự cố</th><th>Ngày khai báo</th><th>Cập nhật gần nhất</th><th>Trạng thái</th></tr></thead><tbody>
-            <tr><td><strong>HSBT-260726</strong></td><td>PVI-OTO-260715</td><td>Va chạm giao thông</td><td>26/07/2026</td><td>Đang chờ ảnh hiện trường</td><td><span class="status warning">Cần bổ sung</span></td></tr>
-          </tbody></table></div>
-        </section>
-
-        <section id="screen-rewards" class="screen">
-          <div class="page-head"><div><h1>Ưu đãi & PVI Rewards</h1><p>Dùng 85 điểm hiện có để đổi ưu đãi bảo hiểm.</p></div><button class="btn btn-primary demo">🎮 Chơi vòng quay</button></div>
-          <div class="cards-grid">
-            <article class="product"><div class="product-visual">10%</div><div class="product-body"><h3>Giảm 10% phí TNDS</h3><p>Áp dụng cho hợp đồng TNDS ô tô đầu tiên đủ điều kiện.</p><div class="product-bottom"><span class="price">85 điểm</span><button class="btn btn-soft demo">Đổi quà</button></div></div></article>
-            <article class="product"><div class="product-visual">🚗</div><div class="product-body"><h3>Voucher cứu hộ 100K</h3><p>Khấu trừ cho một lần sử dụng dịch vụ cứu hộ liên kết.</p><div class="product-bottom"><span class="price">60 điểm</span><button class="btn btn-soft demo">Đổi quà</button></div></div></article>
-            <article class="product"><div class="product-visual">5%</div><div class="product-body"><h3>Ưu đãi vật chất xe</h3><p>Áp dụng khi hoàn tất tư vấn và đủ điều kiện cấp đơn.</p><div class="product-bottom"><span class="price">120 điểm</span><button class="btn btn-soft demo">Chưa đủ điểm</button></div></div></article>
-          </div>
+          <div class="page-head"><div><h1>Yêu cầu bồi thường</h1><p>Xem sự cố, chứng từ khách hàng và ra quyết định xử lý hồ sơ.</p></div><div class="toolbar"><select class="select"><option>Tháng 07/2026</option><option>Tháng 06/2026</option></select><select class="select claim-status-filter"><option value="all">Tất cả trạng thái</option><option value="pending">Chờ duyệt</option><option value="approved">Đã chấp nhận</option><option value="rejected">Đã từ chối</option></select></div></div>
+          <div class="claim-summary"><div class="summary-card"><span>Chờ duyệt</span><strong id="pending-count">04 hồ sơ</strong></div><div class="summary-card"><span>Đã chấp nhận tháng này</span><strong>58 hồ sơ</strong></div><div class="summary-card"><span>Tổng tiền dự kiến chi trả</span><strong>1,84 tỷ đồng</strong></div></div>
+          <div class="table-card"><div class="table-top"><h2>Danh sách hồ sơ bồi thường</h2><input class="input" placeholder="Tìm mã hồ sơ, khách hàng..."></div><div class="table-scroll"><table><thead><tr><th>Mã hồ sơ</th><th>Khách hàng</th><th>Gói bảo hiểm</th><th>Sự cố</th><th>Ngày gửi</th><th>Ước tính tổn thất</th><th>Trạng thái</th><th></th></tr></thead><tbody id="claims-body">
+            <tr data-status="pending"><td><strong>HSBT-260726</strong></td><td>Trần Ngọc Thùy Ngân<br><small>0912 345 678</small></td><td>Vật chất xe ô tô<br><small>30A-123.45</small></td><td>Va chạm giao thông</td><td>26/07/2026</td><td>18.500.000đ</td><td><span class="status pending">Chờ duyệt</span></td><td><button class="action-link claim-detail" data-claim="HSBT-260726">Xem & xử lý</button></td></tr>
+            <tr data-status="pending"><td><strong>HSBT-260725</strong></td><td>Nguyễn Hoàng Nam<br><small>0988 222 555</small></td><td>Vật chất xe ô tô<br><small>51K-889.12</small></td><td>Ngập nước động cơ</td><td>25/07/2026</td><td>86.000.000đ</td><td><span class="status pending">Chờ duyệt</span></td><td><button class="action-link claim-detail" data-claim="HSBT-260725">Xem & xử lý</button></td></tr>
+            <tr data-status="approved"><td><strong>HSBT-260718</strong></td><td>Phạm Anh Tú<br><small>0938 111 222</small></td><td>Vật chất xe ô tô<br><small>43A-779.21</small></td><td>Vỡ kính chắn gió</td><td>18/07/2026</td><td>12.800.000đ</td><td><span class="status approved">Đã chấp nhận</span></td><td><button class="action-link claim-detail" data-claim="HSBT-260718">Xem hồ sơ</button></td></tr>
+            <tr data-status="rejected"><td><strong>HSBT-260711</strong></td><td>Vũ Minh Long<br><small>0909 665 544</small></td><td>Vật chất xe ô tô<br><small>30G-552.82</small></td><td>Hư hỏng do đua xe</td><td>11/07/2026</td><td>42.000.000đ</td><td><span class="status rejected">Đã từ chối</span></td><td><button class="action-link claim-detail" data-claim="HSBT-260711">Xem hồ sơ</button></td></tr>
+          </tbody></table></div></div>
         </section>
       </div>
     </main>
   </div>
 
-  <div class="modal" id="quote-modal">
-    <div class="modal-card"><div class="modal-head"><h2>Tính phí bảo hiểm xe</h2><button class="close" aria-label="Đóng">✕</button></div><div class="modal-body">
-      <div id="quote-choice"><p style="margin-top:0;color:var(--muted)">Chọn sản phẩm để bắt đầu quy trình phù hợp.</p><div class="choice-grid">
-        <button class="choice choose-flow" data-flow="tnds"><span style="font-size:25px">📄</span><strong>TNDS ô tô bắt buộc</strong><small>Tính phí nhanh và tiếp tục mua online.</small></button>
-        <button class="choice choose-flow" data-flow="physical"><span style="font-size:25px">🚙</span><strong>Bảo hiểm vật chất xe</strong><small>Nhận phí tham khảo và tư vấn theo xe.</small></button>
-      </div></div>
-      <form id="quote-form" style="display:none" onsubmit="return false"><div class="form-grid">
-        <div class="field"><label>Hãng xe</label><select><option>Toyota</option><option>Honda</option><option>VinFast</option><option>Mercedes-Benz</option></select></div>
-        <div class="field"><label>Dòng xe</label><input placeholder="Ví dụ: Camry 2.0Q"></div>
-        <div class="field"><label>Năm sản xuất</label><select><option>2026</option><option>2025</option><option>2024</option><option>2023</option></select></div>
-        <div class="field"><label>Giá trị xe</label><input type="number" value="800000000"></div>
-        <div class="field"><label>Voucher</label><select><option>Không sử dụng</option><option>Giảm 5% phí vật chất xe</option><option>Voucher cứu hộ 100K</option></select></div>
-        <div class="field"><label>Mã giới thiệu</label><input placeholder="Nhập mã nếu có"></div>
-        <div class="span-2" style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><button class="btn btn-soft" id="quote-back">‹ Chọn lại</button><button class="btn btn-primary" id="quote-submit">Xem phí dự kiến</button></div>
-      </div></form>
-    </div></div>
+  <div class="modal" id="claim-modal">
+    <div class="modal-card">
+      <div class="modal-head"><h2>Chi tiết yêu cầu bồi thường <span id="modal-claim-id">HSBT-260726</span></h2><button class="close" aria-label="Đóng">✕</button></div>
+      <div class="modal-body">
+        <div class="detail-grid">
+          <div class="detail-box"><span>Khách hàng</span><strong>Trần Ngọc Thùy Ngân · 0912 345 678</strong></div>
+          <div class="detail-box"><span>Hợp đồng</span><strong>PVI-OTO-260715 · còn hiệu lực</strong></div>
+          <div class="detail-box"><span>Xe được bảo hiểm</span><strong>Toyota Camry · 30A-123.45</strong></div>
+          <div class="detail-box"><span>Ước tính tổn thất</span><strong>18.500.000đ</strong></div>
+          <div class="detail-box span-2"><span>Thông tin sự cố</span><strong>Va chạm với xe phía trước tại đường Nguyễn Trãi, Hà Nội. Hư hỏng cản trước, đèn pha trái và nắp capo. Không có thương tích về người.</strong></div>
+          <div class="detail-box span-2"><span>Chứng từ khách hàng đã gửi</span><div class="document-list"><div class="document">🖼️<br>Ảnh hiện trường<br><strong>4 ảnh</strong></div><div class="document">📄<br>Biên bản sự cố<br><strong>Đã tải lên</strong></div><div class="document">🪪<br>GPLX & đăng ký xe<br><strong>Đã xác thực</strong></div></div></div>
+          <div class="detail-box span-2"><span>Ghi chú xử lý</span><input class="input" id="claim-note" style="width:100%;margin-top:7px" placeholder="Nhập lý do chấp nhận hoặc từ chối hồ sơ..."></div>
+        </div>
+        <div class="modal-actions" id="claim-actions"><button class="btn btn-danger" id="reject-claim">Từ chối yêu cầu</button><button class="btn btn-success" id="approve-claim">Chấp nhận bồi thường</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="customer-modal">
+    <div class="modal-card"><div class="modal-head"><h2>Hồ sơ khách hàng</h2><button class="close" aria-label="Đóng">✕</button></div><div class="modal-body"><div class="detail-grid"><div class="detail-box"><span>Khách hàng</span><strong>Trần Ngọc Thùy Ngân</strong></div><div class="detail-box"><span>Mã khách hàng</span><strong>KH-26071508</strong></div><div class="detail-box"><span>Điện thoại</span><strong>0912 345 678</strong></div><div class="detail-box"><span>Hạng thành viên</span><strong>Member · 85 điểm</strong></div><div class="detail-box span-2"><span>Dịch vụ đang sử dụng</span><strong>Vật chất xe ô tô · TNDS ô tô bắt buộc · Tổng phí 8.443.700đ</strong></div></div></div></div>
   </div>
   <div class="toast" id="toast">Thao tác đã được ghi nhận.</div>
 
   <script>
-    const screens = document.querySelectorAll(".screen");
-    const navButtons = document.querySelectorAll(".nav-btn[data-screen]");
-    const modal = document.getElementById("quote-modal");
-    const choice = document.getElementById("quote-choice");
-    const form = document.getElementById("quote-form");
-    const toast = document.getElementById("toast");
-
-    function showScreen(name) {
-      screens.forEach(screen => screen.classList.toggle("active", screen.id === `screen-${name}`));
-      navButtons.forEach(button => button.classList.toggle("active", button.dataset.screen === name));
-      window.scrollTo({top:0,behavior:"smooth"});
-    }
-    function showToast(message) {
-      toast.textContent = message; toast.classList.add("show");
-      clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove("show"),2200);
-    }
-    function openQuote() {
-      modal.classList.add("open");
-      choice.style.display="block";
-      form.style.display="none";
-      modal.querySelector(".modal-head h2").textContent = "Tính phí bảo hiểm xe";
-    }
-    navButtons.forEach(button => button.addEventListener("click",() => showScreen(button.dataset.screen)));
-    document.querySelectorAll(".open-quote").forEach(button => button.addEventListener("click",openQuote));
-    modal.querySelector(".close").addEventListener("click",() => modal.classList.remove("open"));
-    modal.addEventListener("click",event => { if(event.target===modal) modal.classList.remove("open"); });
-    document.querySelectorAll(".choose-flow").forEach(button => button.addEventListener("click",() => {
-      choice.style.display="none"; form.style.display="block";
-      modal.querySelector(".modal-head h2").textContent = button.dataset.flow==="tnds" ? "Tính phí TNDS ô tô" : "Báo phí vật chất xe";
-    }));
-    document.getElementById("quote-back").addEventListener("click",() => { choice.style.display="block"; form.style.display="none"; });
-    document.getElementById("quote-submit").addEventListener("click",() => { modal.classList.remove("open"); showToast("Đã tính phí minh họa và ghi nhận ưu đãi."); });
-    document.querySelectorAll(".demo").forEach(button => button.addEventListener("click",() => showToast("Đây là thao tác minh họa trong bản demo web.")));
+    const screens=document.querySelectorAll(".screen"),navButtons=document.querySelectorAll(".nav-btn[data-screen]"),toast=document.getElementById("toast");
+    const claimModal=document.getElementById("claim-modal"),customerModal=document.getElementById("customer-modal");
+    let activeClaimRow=null,pendingClaims=4;
+    const monthlyData={7:{orders:"1.284",revenue:"9,82 tỷ",newCustomers:"846",claims:"76"},6:{orders:"1.118",revenue:"8,83 tỷ",newCustomers:"773",claims:"69"},5:{orders:"1.024",revenue:"8,16 tỷ",newCustomers:"698",claims:"63"}};
+    function showScreen(name){screens.forEach(s=>s.classList.toggle("active",s.id===`screen-${name}`));navButtons.forEach(b=>b.classList.toggle("active",b.dataset.screen===name));window.scrollTo({top:0,behavior:"smooth"})}
+    function showToast(message){toast.textContent=message;toast.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>toast.classList.remove("show"),2300)}
+    navButtons.forEach(b=>b.addEventListener("click",()=>showScreen(b.dataset.screen)));
+    document.querySelectorAll("[data-screen-jump]").forEach(b=>b.addEventListener("click",()=>showScreen(b.dataset.screenJump)));
+    document.querySelectorAll(".month-filter").forEach(select=>select.addEventListener("change",()=>{const d=monthlyData[select.value]||monthlyData[7];document.getElementById("kpi-orders").textContent=d.orders;document.getElementById("kpi-revenue").textContent=d.revenue;document.getElementById("kpi-new").textContent=d.newCustomers;document.getElementById("kpi-claims").textContent=d.claims;showToast(`Đã cập nhật dashboard theo tháng ${select.value}/2026.`)}));
+    document.querySelectorAll(".claim-detail").forEach(button=>button.addEventListener("click",()=>{activeClaimRow=button.closest("tr");document.getElementById("modal-claim-id").textContent=button.dataset.claim;document.getElementById("claim-actions").style.display=activeClaimRow.dataset.status==="pending"?"flex":"none";claimModal.classList.add("open")}));
+    document.querySelectorAll(".customer-detail").forEach(button=>button.addEventListener("click",()=>customerModal.classList.add("open")));
+    document.querySelectorAll(".modal .close").forEach(button=>button.addEventListener("click",()=>button.closest(".modal").classList.remove("open")));
+    document.querySelectorAll(".modal").forEach(modal=>modal.addEventListener("click",event=>{if(event.target===modal)modal.classList.remove("open")}));
+    function resolveClaim(status,label){if(!activeClaimRow)return;const note=document.getElementById("claim-note").value.trim();if(!note){showToast("Vui lòng nhập ghi chú hoặc lý do xử lý.");return}activeClaimRow.dataset.status=status;const tag=activeClaimRow.querySelector(".status");tag.className=`status ${status}`;tag.textContent=label;activeClaimRow.querySelector(".claim-detail").textContent="Xem hồ sơ";pendingClaims=Math.max(0,pendingClaims-1);document.getElementById("claim-badge").textContent=pendingClaims;document.getElementById("pending-count").textContent=`0${pendingClaims} hồ sơ`;claimModal.classList.remove("open");document.getElementById("claim-note").value="";showToast(`Hồ sơ đã được ${label.toLowerCase()}.`)}
+    document.getElementById("approve-claim").addEventListener("click",()=>resolveClaim("approved","Đã chấp nhận"));
+    document.getElementById("reject-claim").addEventListener("click",()=>resolveClaim("rejected","Đã từ chối"));
+    document.querySelector(".claim-status-filter").addEventListener("change",event=>{document.querySelectorAll("#claims-body tr").forEach(row=>row.style.display=event.target.value==="all"||row.dataset.status===event.target.value?"":"none")});
+    document.querySelectorAll(".demo").forEach(button=>button.addEventListener("click",()=>showToast("Đây là thao tác minh họa trong dashboard admin.")));
   </script>
 </body>
 </html>
