@@ -1,0 +1,3545 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PVI Care - Zalo Mini App Prototype</title>
+  <style>
+    :root {
+      --primary: #0876c9;
+      --primary-dark: #045a9e;
+      --primary-soft: #eaf5ff;
+      --accent: #f59d22;
+      --success: #178a55;
+      --danger: #d9534f;
+      --warning-soft: #fff6e8;
+      --surface: #ffffff;
+      --background: #f4f7fa;
+      --text: #172333;
+      --muted: #657386;
+      --border: #dde5ed;
+      --shadow: 0 10px 30px rgba(28, 59, 91, 0.09);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #dce8f2;
+      color: var(--text);
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .prototype-shell {
+      width: min(430px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      background: var(--background);
+      position: relative;
+      overflow-x: hidden;
+      box-shadow: 0 0 40px rgba(13, 47, 78, 0.15);
+    }
+
+    .topbar {
+      padding: 18px 18px 14px;
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .topbar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: white;
+      color: var(--primary-dark);
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    .brand-copy small {
+      display: block;
+      opacity: 0.75;
+      margin-bottom: 2px;
+    }
+
+    .brand-copy strong {
+      font-size: 17px;
+    }
+
+    .icon-button {
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.14);
+      color: white;
+      position: relative;
+    }
+
+    .notification-dot {
+      position: absolute;
+      top: 8px;
+      right: 9px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 1px solid white;
+    }
+
+    main {
+      padding: 16px 16px calc(86px + env(safe-area-inset-bottom));
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero {
+      padding: 0;
+      border-radius: 22px;
+      background: transparent;
+      color: white;
+      box-shadow: none;
+    }
+
+    .hero h1 {
+      font-size: 22px;
+      line-height: 1.3;
+      margin: 12px 0 7px;
+    }
+
+    .hero p {
+      margin: 0;
+      opacity: 0.87;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .hero-banner {
+      margin: 0;
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #0f6fa8;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    .banner-slider {
+      display: flex;
+      transition: transform 0.32s ease;
+      width: 100%;
+    }
+
+    .banner-slide {
+      flex: 0 0 100%;
+      width: 100%;
+      aspect-ratio: 2 / 1;
+      overflow: hidden;
+      position: relative;
+      display: grid;
+      place-items: center;
+      background: #ffffff;
+      max-height: 220px;
+    }
+
+    .banner-slide img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .banner-controls {
+      position: absolute;
+      inset: 50% 0 auto;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      gap: 10px;
+      width: 100%;
+      pointer-events: none;
+    }
+
+    .banner-arrow {
+      pointer-events: auto;
+      border: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.88);
+      color: var(--primary-dark);
+      font-size: 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.16);
+    }
+
+    .banner-dots {
+      position: absolute;
+      z-index: 3;
+      left: 50%;
+      bottom: 6px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .banner-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.65);
+      transition: transform 0.2s ease, background 0.2s ease;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    .banner-dot.active {
+      background: white;
+      transform: scale(1.1);
+    }
+
+    .button {
+      border: 0;
+      min-height: 43px;
+      padding: 0 15px;
+      border-radius: 13px;
+      font-weight: 700;
+    }
+
+    .button-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .button-light {
+      background: white;
+      color: var(--primary-dark);
+    }
+
+    .button-soft {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    .button-outline {
+      background: white;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    .button-danger {
+      background: #fff0ef;
+      color: var(--danger);
+    }
+
+    .button-full {
+      width: 100%;
+    }
+
+    .section {
+      margin-top: 21px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 11px;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .text-link {
+      border: 0;
+      background: transparent;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+    }
+
+    .quick-action {
+      border: 0;
+      background: white;
+      border-radius: 16px;
+      padding: 12px 6px 10px;
+      color: var(--text);
+      box-shadow: 0 4px 15px rgba(26, 50, 74, 0.05);
+    }
+
+    .quick-icon {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 8px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 19px;
+    }
+
+    .quick-action span:last-child {
+      display: block;
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 650;
+    }
+
+    .notice-card,
+    .card,
+    .policy-card,
+    .product-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .notice-card {
+      padding: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--warning-soft);
+      border-color: #f4d8a7;
+    }
+
+    .notice-icon {
+      min-width: 37px;
+      height: 37px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: white;
+      color: var(--accent);
+    }
+
+    .notice-card strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .notice-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .notice-card .text-link {
+      padding-left: 0;
+      margin-top: 4px;
+    }
+
+    .product-scroll {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 77%;
+      gap: 11px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+
+    .product-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .product-card {
+      padding: 15px;
+    }
+
+    .product-visual {
+      height: 115px;
+      border-radius: 15px;
+      background:
+        radial-gradient(circle at 76% 25%, white 0 6%, transparent 7%),
+        linear-gradient(140deg, #e8f6ff, #cceaff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      margin-bottom: 13px;
+    }
+
+    .product-card h3,
+    .policy-card h3 {
+      margin: 0 0 6px;
+      font-size: 15px;
+    }
+
+    .product-card p {
+      margin: 0 0 11px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .product-meta,
+    .policy-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .price {
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 0 9px;
+      border-radius: 999px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-success {
+      background: #e8f6ef;
+      color: var(--success);
+    }
+
+    .badge-warning {
+      background: var(--warning-soft);
+      color: #a76000;
+    }
+
+    .support-card {
+      padding: 16px;
+      background: linear-gradient(135deg, #173a59, #245e8c);
+      color: white;
+      border-radius: var(--radius);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .support-card h3 {
+      margin: 0 0 5px;
+      font-size: 15px;
+    }
+
+    .support-card p {
+      margin: 0;
+      opacity: 0.8;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .support-avatar {
+      width: 53px;
+      height: 53px;
+      border-radius: 17px;
+      background: white;
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      flex: 0 0 auto;
+    }
+
+    .page-title {
+      margin: 2px 0 4px;
+      font-size: 23px;
+    }
+
+    .page-subtitle {
+      color: var(--muted);
+      margin: 0 0 17px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 14px;
+    }
+
+    .filter-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-chip {
+      white-space: nowrap;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .filter-chip.active {
+      color: white;
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+
+    .product-list {
+      display: grid;
+      gap: 11px;
+    }
+
+    .product-list .product-card {
+      display: grid;
+      grid-template-columns: 84px 1fr;
+      gap: 13px;
+      align-items: center;
+    }
+
+    .product-list .product-visual {
+      height: 84px;
+      margin: 0;
+      font-size: 35px;
+    }
+
+    .policy-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .policy-card {
+      padding: 15px;
+    }
+
+    .policy-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 13px;
+    }
+
+    .policy-code {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .policy-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+      padding: 12px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .policy-details small {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      margin-bottom: 3px;
+    }
+
+    .policy-details strong {
+      font-size: 12px;
+    }
+
+    .policy-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    .policy-actions .button {
+      flex: 1;
+      min-height: 39px;
+      font-size: 12px;
+      padding: 0 8px;
+    }
+
+    .claim-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-bottom: 15px;
+    }
+
+    .summary-item {
+      border-radius: 15px;
+      background: white;
+      border: 1px solid var(--border);
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    .summary-item strong {
+      display: block;
+      font-size: 20px;
+      color: var(--primary-dark);
+      margin-bottom: 3px;
+    }
+
+    .summary-item span {
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .claim-card {
+      padding: 15px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .claim-card + .claim-card {
+      margin-top: 11px;
+    }
+
+    .claim-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .claim-head h3 {
+      margin: 0 0 4px;
+      font-size: 14px;
+    }
+
+    .claim-head p {
+      margin: 0;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .timeline {
+      margin-top: 14px;
+      display: grid;
+      gap: 0;
+    }
+
+    .timeline-step {
+      position: relative;
+      padding: 0 0 16px 29px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .timeline-step:last-child {
+      padding-bottom: 0;
+    }
+
+    .timeline-step::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 5px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #cfd9e2;
+      z-index: 2;
+    }
+
+    .timeline-step::after {
+      content: "";
+      position: absolute;
+      left: 10px;
+      top: 14px;
+      width: 2px;
+      height: calc(100% - 4px);
+      background: #dce4eb;
+    }
+
+    .timeline-step:last-child::after {
+      display: none;
+    }
+
+    .timeline-step.done,
+    .timeline-step.current {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .timeline-step.done::before {
+      background: var(--success);
+    }
+
+    .timeline-step.current::before {
+      background: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-soft);
+    }
+
+    .account-card {
+      padding: 17px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .account-avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      background: white;
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .account-card h2 {
+      margin: 0 0 4px;
+      font-size: 17px;
+    }
+
+    .account-card p {
+      margin: 0;
+      opacity: 0.8;
+      font-size: 12px;
+    }
+
+    .menu-list {
+      margin-top: 15px;
+      display: grid;
+      gap: 9px;
+    }
+
+    .menu-item {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 15px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+      color: var(--text);
+    }
+
+    .menu-item-icon {
+      width: 39px;
+      height: 39px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .menu-item-copy {
+      flex: 1;
+    }
+
+    .menu-item-copy strong {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+
+    .menu-item-copy span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: min(430px, 100%);
+      min-height: 62px;
+      padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      align-items: center;
+      background: rgba(255,255,255,0.97);
+      border-top: 1px solid var(--border);
+      z-index: 30;
+    }
+
+    .nav-item {
+      min-width: 0;
+      min-height: 48px;
+      padding: 4px 2px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 2px;
+      font-size: 9px;
+      line-height: 1.2;
+      border-radius: 11px;
+    }
+
+    .nav-item .nav-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+      background: var(--primary-soft);
+      font-weight: 800;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(18, 31, 44, 0.48);
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-panel {
+      width: min(430px, 100%);
+      max-height: 88vh;
+      overflow-y: auto;
+      background: white;
+      border-radius: 25px 25px 0 0;
+      padding: 17px 17px 28px;
+      animation: slideUp 0.24s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-handle {
+      width: 48px;
+      height: 5px;
+      border-radius: 999px;
+      background: #dbe2e9;
+      margin: 0 auto 14px;
+    }
+
+    .modal-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-title-row h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .close-button {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      border-radius: 12px;
+      background: #f0f3f6;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 13px;
+      margin-top: 16px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 12px 13px;
+      background: white;
+      color: var(--text);
+      outline: none;
+    }
+
+    .field textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
+    .estimate-box {
+      display: none;
+      margin-top: 15px;
+      padding: 14px;
+      border-radius: 15px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    .estimate-box.show {
+      display: block;
+    }
+
+    .estimate-box small {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .estimate-box strong {
+      display: block;
+      font-size: 23px;
+      margin-bottom: 4px;
+    }
+
+    .estimate-box p {
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .quote-page-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .quote-page-header h1 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    .quote-back {
+      flex: 0 0 40px;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: white;
+      color: var(--primary-dark);
+      font-size: 20px;
+    }
+
+    .quote-intro {
+      margin: -7px 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .quote-choice-grid {
+      display: grid;
+      gap: 13px;
+    }
+
+    .quote-choice {
+      display: grid;
+      grid-template-columns: 50px 1fr auto;
+      align-items: center;
+      gap: 13px;
+      width: 100%;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: white;
+      color: var(--text);
+      text-align: left;
+      box-shadow: 0 8px 22px rgba(20,55,88,0.07);
+    }
+
+    .quote-choice-icon {
+      display: grid;
+      place-items: center;
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      background: var(--primary-soft);
+      font-size: 24px;
+    }
+
+    .quote-choice strong,
+    .quote-choice small {
+      display: block;
+    }
+
+    .quote-choice strong {
+      margin-bottom: 5px;
+      font-size: 15px;
+    }
+
+    .quote-choice small {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .quote-choice-arrow {
+      color: var(--primary);
+      font-size: 22px;
+    }
+
+    .quote-flow {
+      display: none;
+    }
+
+    .quote-flow.active {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .quote-flow-card {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: white;
+    }
+
+    .quote-flow-card h2 {
+      margin: 0 0 5px;
+      font-size: 17px;
+    }
+
+    .quote-flow-card > p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .quote-note {
+      margin-top: 13px;
+      padding: 11px 12px;
+      border-radius: 13px;
+      background: #fff8e6;
+      color: #785800;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .consent-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .consent-row input {
+      margin-top: 2px;
+      accent-color: var(--primary);
+    }
+
+    .quote-result {
+      display: none;
+      margin-top: 14px;
+      padding: 15px;
+      border-radius: 16px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    .quote-result.show {
+      display: block;
+    }
+
+    .quote-result strong {
+      display: block;
+      margin: 4px 0;
+      font-size: 22px;
+    }
+
+    .quote-result p {
+      margin: 0 0 12px;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .game-hero {
+      margin: -16px -16px 16px;
+      padding: 18px 16px 22px;
+      background: linear-gradient(145deg, #075bc2, #13a8e8);
+      color: white;
+      border-radius: 0 0 25px 25px;
+    }
+
+    .game-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .game-head h1 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    .game-points {
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .game-offer {
+      margin-top: 15px;
+      padding: 11px 13px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.94);
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .game-offer small {
+      display: block;
+      margin-top: 2px;
+      color: var(--accent);
+    }
+
+    .game-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .game-tab {
+      min-height: 50px;
+      border: 1px solid var(--primary);
+      border-radius: 14px;
+      background: white;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .game-tab.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .game-panel {
+      display: none;
+    }
+
+    .game-panel.active {
+      display: block;
+    }
+
+    .game-card {
+      overflow: hidden;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #eefaff, white);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .game-banner {
+      padding: 18px 14px;
+      background: linear-gradient(135deg, #006ce5, #26c0ea);
+      color: white;
+    }
+
+    .game-banner small,
+    .game-banner strong {
+      display: block;
+    }
+
+    .game-banner strong {
+      margin-top: 5px;
+      font-size: 24px;
+    }
+
+    .wheel-wrap {
+      position: relative;
+      width: 250px;
+      height: 250px;
+      margin: 20px auto 13px;
+    }
+
+    .wheel-pointer {
+      position: absolute;
+      z-index: 2;
+      top: -7px;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-left: 13px solid transparent;
+      border-right: 13px solid transparent;
+      border-top: 28px solid #f0463e;
+      transform: translateX(-50%);
+    }
+
+    .lucky-wheel {
+      width: 100%;
+      height: 100%;
+      border: 9px solid #ffc342;
+      border-radius: 50%;
+      background: conic-gradient(
+        #0875e1 0 45deg, #fff 45deg 90deg,
+        #0875e1 90deg 135deg, #fff 135deg 180deg,
+        #0875e1 180deg 225deg, #fff 225deg 270deg,
+        #0875e1 270deg 315deg, #fff 315deg 360deg
+      );
+      box-shadow: 0 8px 22px rgba(0,83,175,0.24);
+      transition: transform 2.4s cubic-bezier(.18,.75,.18,1);
+    }
+
+    .wheel-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      display: grid;
+      place-items: center;
+      width: 66px;
+      height: 66px;
+      border: 5px solid #ffc342;
+      border-radius: 50%;
+      background: white;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 800;
+      transform: translate(-50%, -50%);
+    }
+
+    .wheel-label {
+      position: absolute;
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .wheel-label.one { top: 28px; right: 55px; }
+    .wheel-label.two { top: 103px; right: 18px; }
+    .wheel-label.three { bottom: 30px; right: 55px; }
+    .wheel-label.four { bottom: 30px; left: 56px; }
+    .wheel-label.five { top: 103px; left: 17px; }
+    .wheel-label.six { top: 28px; left: 54px; }
+
+    .spin-button {
+      min-width: 190px;
+      margin-bottom: 12px;
+      border-radius: 999px;
+    }
+
+    .game-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--border);
+    }
+
+    .game-action {
+      min-height: 52px;
+      border: 0;
+      background: white;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .game-action + .game-action {
+      border-left: 1px solid var(--border);
+    }
+
+    .voucher-list {
+      display: grid;
+      gap: 11px;
+    }
+
+    .voucher-card {
+      display: grid;
+      grid-template-columns: 62px 1fr auto;
+      align-items: center;
+      gap: 11px;
+      padding: 12px;
+      border-radius: 17px;
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .voucher-icon {
+      display: grid;
+      place-items: center;
+      width: 62px;
+      height: 62px;
+      border-radius: 13px;
+      background: #e8f3ff;
+      color: var(--primary);
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .voucher-copy strong,
+    .voucher-copy small {
+      display: block;
+    }
+
+    .voucher-copy strong {
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .voucher-copy small {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .voucher-cost {
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 800;
+      text-align: right;
+    }
+
+    .voucher-cost button {
+      display: block;
+      margin-top: 6px;
+      padding: 7px 10px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--primary);
+      color: white;
+      font-size: 10px;
+    }
+
+    .game-modal-icon {
+      display: grid;
+      place-items: center;
+      width: 78px;
+      height: 78px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: var(--primary-soft);
+      font-size: 38px;
+    }
+
+    .game-modal-copy {
+      text-align: center;
+    }
+
+    .game-modal-copy h2 {
+      margin: 0 0 8px;
+      color: var(--primary);
+    }
+
+    .game-modal-copy p {
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .game-rules {
+      text-align: left;
+      color: var(--text);
+    }
+
+    .reward-code {
+      margin: 12px 0;
+      padding: 12px;
+      border-radius: 13px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .member-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 172px;
+      padding: 22px;
+      border-radius: 21px;
+      background:
+        linear-gradient(135deg, transparent 45%, rgba(255,255,255,0.18) 45% 70%, transparent 70%),
+        linear-gradient(135deg, #075fd6, #10a5e9);
+      color: white;
+      box-shadow: 0 14px 30px rgba(0,91,181,0.22);
+    }
+
+    .member-card::after {
+      content: "PVI";
+      position: absolute;
+      right: 20px;
+      top: 18px;
+      font-size: 25px;
+      font-weight: 900;
+      font-style: italic;
+      opacity: 0.95;
+    }
+
+    .member-tier {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .member-card h2 {
+      margin: 54px 0 3px;
+      font-size: 18px;
+    }
+
+    .member-card p {
+      margin: 0;
+      font-size: 12px;
+      opacity: 0.85;
+    }
+
+    .member-progress-card {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 18px;
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .member-progress-head,
+    .member-progress-labels {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .member-progress-head {
+      align-items: flex-start;
+    }
+
+    .member-progress-head strong {
+      font-size: 15px;
+    }
+
+    .member-progress-head span {
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .member-progress-track {
+      height: 10px;
+      margin: 13px 0 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e8eef5;
+    }
+
+    .member-progress-fill {
+      width: 56.67%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--primary), #18b8e8);
+    }
+
+    .member-progress-labels {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .member-progress-note {
+      margin: 12px 0 0;
+      color: var(--primary-dark);
+      font-size: 12px;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .member-levels {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .member-level {
+      padding: 10px 4px;
+      border-radius: 12px;
+      background: #edf2f7;
+      color: var(--muted);
+      text-align: center;
+      font-size: 9px;
+    }
+
+    .member-level.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+      box-shadow: inset 0 0 0 1px var(--primary);
+    }
+
+    .member-level strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 12px;
+    }
+
+    .member-benefits {
+      margin-top: 17px;
+      padding: 16px;
+      border-radius: 18px;
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .member-benefits h2 {
+      margin: 0 0 5px;
+      font-size: 17px;
+    }
+
+    .member-benefit {
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 11px;
+      align-items: center;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .member-benefit:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .member-benefit-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: var(--primary-soft);
+      font-size: 18px;
+    }
+
+    .member-benefit strong,
+    .member-benefit small {
+      display: block;
+    }
+
+    .member-benefit strong {
+      margin-bottom: 3px;
+      font-size: 13px;
+    }
+
+    .member-benefit small {
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.4;
+    }
+
+    .member-card {
+      isolation: isolate;
+      min-height: 192px;
+      background:
+        radial-gradient(circle at 84% 22%, rgba(140,232,255,0.75), transparent 19%),
+        linear-gradient(128deg, transparent 0 39%, rgba(255,255,255,0.12) 39% 57%, transparent 57%),
+        linear-gradient(45deg, #031e57 0 26%, #0759d7 26% 58%, #0aa7e8 58% 100%);
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: 0 18px 38px rgba(0,73,156,0.3), inset 0 1px 0 rgba(255,255,255,0.45);
+    }
+
+    .member-card::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 170px;
+      height: 170px;
+      right: -64px;
+      bottom: -75px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 50%;
+      box-shadow: 0 0 0 18px rgba(255,255,255,0.05), 0 0 0 38px rgba(255,255,255,0.04);
+    }
+
+    .member-card::after {
+      content: "PVI";
+      letter-spacing: -2px;
+      text-shadow: 0 3px 12px rgba(0,0,0,0.22);
+    }
+
+    .member-chip {
+      position: absolute;
+      right: 22px;
+      bottom: 21px;
+      width: 42px;
+      height: 31px;
+      border-radius: 8px;
+      background:
+        linear-gradient(90deg, transparent 46%, rgba(80,64,0,0.3) 46% 54%, transparent 54%),
+        linear-gradient(0deg, transparent 46%, rgba(80,64,0,0.25) 46% 54%, transparent 54%),
+        linear-gradient(135deg, #fff3a5, #d9a824);
+      box-shadow: inset 0 0 0 1px rgba(116,78,0,0.35);
+    }
+
+    .member-card-number {
+      position: absolute;
+      left: 22px;
+      bottom: 18px;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      opacity: 0.8;
+    }
+
+    .member-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .member-tab {
+      position: relative;
+      min-height: 43px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .member-tab.active {
+      color: var(--primary);
+    }
+
+    .member-tab.active::after {
+      content: "";
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      bottom: -1px;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--primary);
+    }
+
+    .member-panel {
+      display: none;
+    }
+
+    .member-panel.active {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    button.member-level {
+      border: 0;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .member-level:nth-child(2) { background: linear-gradient(145deg, #f7fbff, #cbd7e4); color: #52677b; }
+    .member-level:nth-child(3) { background: linear-gradient(145deg, #fff7cb, #d9a729); color: #805a00; }
+    .member-level:nth-child(4) { background: linear-gradient(145deg, #ebf4ff, #b6a4f2); color: #4d3690; }
+
+    button.member-benefit {
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+    }
+
+    button.member-benefit::after {
+      content: "›";
+      color: var(--primary);
+      font-size: 20px;
+    }
+
+    .member-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .member-stat {
+      padding: 14px 8px;
+      border-radius: 14px;
+      background: #eaf3ff;
+      text-align: center;
+      font-size: 11px;
+    }
+
+    .member-stat.used {
+      background: #fff0f2;
+    }
+
+    .member-stat strong {
+      display: block;
+      margin-top: 5px;
+      color: var(--primary);
+      font-size: 18px;
+    }
+
+    .member-info-card,
+    .points-history {
+      padding: 16px;
+      border-radius: 18px;
+      background: white;
+      box-shadow: var(--shadow);
+    }
+
+    .member-info-card h2,
+    .points-history h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .member-info-row,
+    .points-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 11px;
+    }
+
+    .member-info-row:last-child,
+    .points-row:last-child {
+      border-bottom: 0;
+    }
+
+    .member-info-row span:last-child {
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .points-history {
+      margin-top: 14px;
+    }
+
+    .points-row strong {
+      color: #15935d;
+    }
+
+    .points-row small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+    }
+
+    .member-modal-list {
+      display: grid;
+      gap: 9px;
+      margin: 14px 0;
+      text-align: left;
+    }
+
+    .member-modal-list span {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      font-size: 11px;
+    }
+
+    .referral-code-box {
+      margin: 15px 0;
+      padding: 16px;
+      border: 1px dashed var(--primary);
+      border-radius: 15px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      text-align: center;
+    }
+
+    .referral-code-box small,
+    .referral-code-box strong {
+      display: block;
+    }
+
+    .referral-code-box strong {
+      margin-top: 6px;
+      font-size: 25px;
+      letter-spacing: 2px;
+    }
+
+    .referral-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .quote-promo {
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: #f8fbff;
+    }
+
+    .quote-promo-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      font-weight: 700;
+    }
+
+    .quote-promo-title span:last-child {
+      color: var(--primary);
+      font-size: 11px;
+    }
+
+    .quote-voucher-list {
+      display: none;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .quote-voucher-list.open {
+      display: grid;
+    }
+
+    .quote-voucher {
+      display: grid;
+      grid-template-columns: 40px 1fr auto;
+      align-items: center;
+      gap: 9px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .quote-voucher.selected {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      box-shadow: 0 0 0 2px rgba(12,108,177,0.08);
+    }
+
+    .quote-voucher-icon {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #e8f3ff;
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .quote-voucher strong,
+    .quote-voucher small {
+      display: block;
+    }
+
+    .quote-voucher strong {
+      margin-bottom: 3px;
+      font-size: 11px;
+    }
+
+    .quote-voucher small {
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.35;
+    }
+
+    .quote-voucher-check {
+      color: var(--primary);
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .quote-referral {
+      margin-top: 12px;
+    }
+
+    .quote-referral label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .quote-referral-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
+
+    .quote-referral-row input {
+      min-width: 0;
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 10px 11px;
+      text-transform: uppercase;
+    }
+
+    .apply-referral {
+      border: 0;
+      border-radius: 11px;
+      padding: 0 12px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 92px;
+      transform: translate(-50%, 20px);
+      width: min(380px, calc(100% - 32px));
+      padding: 13px 15px;
+      border-radius: 14px;
+      background: #172333;
+      color: white;
+      text-align: center;
+      font-size: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.2s ease;
+      z-index: 200;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (min-width: 700px) {
+      body {
+        padding: 24px 0;
+      }
+
+      .prototype-shell {
+        min-height: calc(100vh - 48px);
+        border-radius: 28px;
+      }
+
+      .bottom-nav {
+        bottom: 24px;
+        border-radius: 0 0 28px 28px;
+      }
+
+      .modal-panel {
+        margin-bottom: 24px;
+        border-radius: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-shell">
+    <header class="topbar">
+      <div class="topbar-row">
+        <div class="brand">
+          <div class="brand-mark">PVI</div>
+          <div class="brand-copy">
+            <small>Xin chào, Ngân</small>
+            <strong>PVI Care</strong>
+          </div>
+        </div>
+        <button class="icon-button action-demo" aria-label="Thông báo">
+          🔔
+          <span class="notification-dot"></span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section id="screen-home" class="screen active">
+        <div class="hero">
+          <div class="hero-banner" aria-label="Banner sản phẩm PVI">
+            <div class="banner-slider" id="banner-slider">
+              <div class="banner-slide">
+                <img src="../images/bao_hiem_xe_o_to_pvi.png" alt="Bảo hiểm xe ô tô PVI" />
+              </div>
+              <div class="banner-slide">
+                <img src="../images/PVI-va-cardoctor.png" alt="PVI kết nối CareDoctor" />
+              </div>
+              <div class="banner-slide">
+                <img src="../images/trip-care-vnairline.jpg" alt="Bảo hiểm du lịch PVI" />
+              </div>
+            </div>
+            <div class="banner-controls">
+              <button type="button" class="banner-arrow" id="banner-prev" aria-label="Ảnh trước">‹</button>
+              <button type="button" class="banner-arrow" id="banner-next" aria-label="Ảnh kế tiếp">›</button>
+            </div>
+            <div class="banner-dots" id="banner-dots"></div>
+          </div>
+        </div>
+
+        <section class="section">
+          <div class="section-header">
+            <h2>Tiện ích nhanh</h2>
+          </div>
+          <div class="quick-grid">
+            <button class="quick-action open-quote">
+              <span class="quick-icon">🧮</span>
+              <span>Tính phí</span>
+            </button>
+            <button class="quick-action go-products">
+              <span class="quick-icon">🛡️</span>
+              <span>Mua bảo hiểm</span>
+            </button>
+            <button class="quick-action go-policies">
+              <span class="quick-icon">📄</span>
+              <span>Hợp đồng</span>
+            </button>
+            <button class="quick-action open-claim">
+              <span class="quick-icon">📷</span>
+              <span>Bồi thường</span>
+            </button>
+            <button class="quick-action action-demo">
+              <span class="quick-icon">💳</span>
+              <span>Thanh toán</span>
+            </button>
+            <button class="quick-action action-demo">
+              <span class="quick-icon">🔁</span>
+              <span>Gia hạn</span>
+            </button>
+            <button class="quick-action open-booking">
+              <span class="quick-icon">📅</span>
+              <span>Đặt lịch tư vấn</span>
+            </button>
+            <button class="quick-action go-members">
+              <span class="quick-icon">💎</span>
+              <span>Thành viên</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="notice-card">
+            <div class="notice-icon">⏰</div>
+            <div>
+              <strong>Hợp đồng sắp hết hạn</strong>
+              <p>Bảo hiểm vật chất xe 30A-123.45 sẽ hết hạn sau 15 ngày.</p>
+              <button class="text-link action-demo">Xem và gia hạn →</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-header">
+            <h2>Sản phẩm dành cho bạn</h2>
+            <button class="text-link go-products">Xem tất cả</button>
+          </div>
+
+          <div class="product-scroll">
+            <article class="product-card">
+              <div class="product-visual">🚙</div>
+              <h3>Bảo hiểm vật chất xe ô tô</h3>
+              <p>Bảo vệ trước rủi ro va chạm, cháy nổ và nhiều sự cố bất ngờ.</p>
+              <div class="product-meta">
+                <span class="price">Phí theo giá trị xe</span>
+                <button class="text-link open-quote">Tính phí</button>
+              </div>
+            </article>
+
+            <article class="product-card">
+              <div class="product-visual">👨‍👩‍👧</div>
+              <h3>Bảo hiểm con người</h3>
+              <p>Giải pháp hỗ trợ tài chính khi tai nạn hoặc điều trị y tế.</p>
+              <div class="product-meta">
+                <span class="price">Từ 365.000đ</span>
+                <button class="text-link action-demo">Chi tiết</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="support-card">
+            <div>
+              <h3>Cần chuyên viên hỗ trợ?</h3>
+              <p>Đặt lịch để được tư vấn đúng sản phẩm, quyền lợi và mức phí.</p>
+              <button class="button button-light open-booking" style="margin-top:12px;">Đặt lịch tư vấn</button>
+            </div>
+            <div class="support-avatar">👩🏻‍💼</div>
+          </div>
+        </section>
+      </section>
+
+      <section id="screen-products" class="screen">
+        <h1 class="page-title">Sản phẩm bảo hiểm</h1>
+        <p class="page-subtitle">Lựa chọn giải pháp bảo vệ phù hợp với nhu cầu của bạn.</p>
+
+        <div class="filter-row" aria-label="Bộ lọc sản phẩm">
+          <button class="filter-chip active">Tất cả</button>
+          <button class="filter-chip">Xe cơ giới</button>
+          <button class="filter-chip">Con người</button>
+          <button class="filter-chip">Du lịch</button>
+          <button class="filter-chip">Tài sản</button>
+        </div>
+
+        <div class="product-list">
+          <article class="product-card" data-category="Xe cơ giới">
+            <div class="product-visual">🚙</div>
+            <div>
+              <span class="badge">Xe cơ giới</span>
+              <h3 style="margin-top:8px;">Bảo hiểm vật chất xe ô tô</h3>
+              <p>Bảo vệ phương tiện trước tổn thất bất ngờ.</p>
+              <div class="product-meta">
+                <span class="price">Tính theo xe</span>
+                <button class="text-link open-quote">Tính phí</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card" data-category="Xe cơ giới">
+            <div class="product-visual">🛵</div>
+            <div>
+              <span class="badge">Xe cơ giới</span>
+              <h3 style="margin-top:8px;">TNDS bắt buộc xe máy</h3>
+              <p>Giấy chứng nhận điện tử, đăng ký trực tuyến nhanh chóng.</p>
+              <div class="product-meta">
+                <span class="price">Từ 60.000đ</span>
+                <button class="text-link action-demo">Mua ngay</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card" data-category="Con người">
+            <div class="product-visual">❤️</div>
+            <div>
+              <span class="badge">Con người</span>
+              <h3 style="margin-top:8px;">Bảo hiểm tai nạn cá nhân</h3>
+              <p>Hỗ trợ tài chính trước rủi ro tai nạn trong cuộc sống.</p>
+              <div class="product-meta">
+                <span class="price">Từ 365.000đ</span>
+                <button class="text-link action-demo">Chi tiết</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card" data-category="Du lịch">
+            <div class="product-visual">✈️</div>
+            <div>
+              <span class="badge">Du lịch</span>
+              <h3 style="margin-top:8px;">Bảo hiểm du lịch quốc tế</h3>
+              <p>Bảo vệ cho các hành trình học tập, công tác và nghỉ dưỡng.</p>
+              <div class="product-meta">
+                <span class="price">Từ 98.000đ</span>
+                <button class="text-link action-demo">Mua ngay</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="screen-policies" class="screen">
+        <h1 class="page-title">Hợp đồng của tôi</h1>
+        <p class="page-subtitle">Theo dõi hiệu lực, giấy chứng nhận, thanh toán và gia hạn.</p>
+
+        <div class="policy-list">
+          <article class="policy-card">
+            <div class="policy-top">
+              <div>
+                <div class="policy-code">Mã HĐ: PVI-OTO-260715</div>
+                <h3>Bảo hiểm vật chất xe ô tô</h3>
+              </div>
+              <span class="badge badge-warning">Sắp hết hạn</span>
+            </div>
+
+            <div class="policy-details">
+              <div>
+                <small>Đối tượng bảo hiểm</small>
+                <strong>Xe 30A-123.45</strong>
+              </div>
+              <div>
+                <small>Ngày hết hạn</small>
+                <strong>10/08/2026</strong>
+              </div>
+              <div>
+                <small>Chủ hợp đồng</small>
+                <strong>Trần Ngọc Thùy Ngân</strong>
+              </div>
+              <div>
+                <small>Phí dự kiến gia hạn</small>
+                <strong>6.850.000đ</strong>
+              </div>
+            </div>
+
+            <div class="policy-actions">
+              <button class="button button-outline action-demo">Xem GCN</button>
+              <button class="button button-primary action-demo">Gia hạn</button>
+            </div>
+          </article>
+
+          <article class="policy-card">
+            <div class="policy-top">
+              <div>
+                <div class="policy-code">Mã HĐ: PVI-CN-260102</div>
+                <h3>Bảo hiểm tai nạn cá nhân</h3>
+              </div>
+              <span class="badge badge-success">Đang hiệu lực</span>
+            </div>
+
+            <div class="policy-details">
+              <div>
+                <small>Người được bảo hiểm</small>
+                <strong>Trần Ngọc Thùy Ngân</strong>
+              </div>
+              <div>
+                <small>Ngày hết hạn</small>
+                <strong>02/01/2027</strong>
+              </div>
+              <div>
+                <small>Số tiền bảo hiểm</small>
+                <strong>200.000.000đ</strong>
+              </div>
+              <div>
+                <small>Phí đã thanh toán</small>
+                <strong>520.000đ</strong>
+              </div>
+            </div>
+
+            <div class="policy-actions">
+              <button class="button button-outline action-demo">Quyền lợi</button>
+              <button class="button button-soft open-claim">Yêu cầu BT</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="screen-claims" class="screen">
+        <h1 class="page-title">Bồi thường</h1>
+        <p class="page-subtitle">Khai báo sự cố và theo dõi tiến độ xử lý hồ sơ.</p>
+
+        <div class="claim-summary">
+          <div class="summary-item">
+            <strong>02</strong>
+            <span>Tổng hồ sơ</span>
+          </div>
+          <div class="summary-item">
+            <strong>01</strong>
+            <span>Đang xử lý</span>
+          </div>
+          <div class="summary-item">
+            <strong>01</strong>
+            <span>Đã chi trả</span>
+          </div>
+        </div>
+
+        <button class="button button-primary button-full open-claim">＋ Khai báo tổn thất mới</button>
+
+        <section class="section">
+          <div class="section-header">
+            <h2>Hồ sơ gần đây</h2>
+          </div>
+
+          <article class="claim-card">
+            <div class="claim-head">
+              <div>
+                <h3>Tổn thất xe 30A-123.45</h3>
+                <p>HSBT-260721 · Khai báo ngày 21/07/2026</p>
+              </div>
+              <span class="badge">Đang xử lý</span>
+            </div>
+
+            <div class="timeline">
+              <div class="timeline-step done">Đã tiếp nhận hồ sơ</div>
+              <div class="timeline-step done">Đã kiểm tra chứng từ</div>
+              <div class="timeline-step current">Đang thẩm định tổn thất</div>
+              <div class="timeline-step">Phê duyệt bồi thường</div>
+              <div class="timeline-step">Chi trả</div>
+            </div>
+          </article>
+
+          <article class="claim-card">
+            <div class="claim-head">
+              <div>
+                <h3>Điều trị tai nạn cá nhân</h3>
+                <p>HSBT-260512 · Hoàn tất ngày 28/05/2026</p>
+              </div>
+              <span class="badge badge-success">Đã chi trả</span>
+            </div>
+            <div style="margin-top:13px; padding-top:12px; border-top:1px solid var(--border);">
+              <small style="color:var(--muted);">Số tiền đã chi trả</small>
+              <strong style="display:block; margin-top:4px; color:var(--success);">8.500.000đ</strong>
+            </div>
+          </article>
+        </section>
+      </section>
+
+      <section id="screen-account" class="screen">
+        <div class="account-card">
+          <div class="account-avatar">NN</div>
+          <div>
+            <h2>Trần Ngọc Thùy Ngân</h2>
+            <p>Khách hàng PVI · Hồ sơ đã xác thực</p>
+          </div>
+        </div>
+
+        <div class="menu-list">
+          <button class="menu-item action-demo">
+            <span class="menu-item-icon">👤</span>
+            <span class="menu-item-copy">
+              <strong>Thông tin cá nhân</strong>
+              <span>Quản lý thông tin liên hệ và định danh</span>
+            </span>
+            <span>›</span>
+          </button>
+
+          <button class="menu-item go-policies">
+            <span class="menu-item-icon">📄</span>
+            <span class="menu-item-copy">
+              <strong>Hợp đồng và giấy chứng nhận</strong>
+              <span>Tra cứu hợp đồng bảo hiểm đã mua</span>
+            </span>
+            <span>›</span>
+          </button>
+
+          <button class="menu-item action-demo">
+            <span class="menu-item-icon">💳</span>
+            <span class="menu-item-copy">
+              <strong>Lịch sử thanh toán</strong>
+              <span>Tra cứu phí bảo hiểm và biên nhận</span>
+            </span>
+            <span>›</span>
+          </button>
+
+          <button class="menu-item action-demo">
+            <span class="menu-item-icon">🎁</span>
+            <span class="menu-item-copy">
+              <strong>Ưu đãi của tôi</strong>
+              <span>Voucher chăm sóc xe và sức khỏe</span>
+            </span>
+            <span>›</span>
+          </button>
+
+          <button class="menu-item" id="open-referral">
+            <span class="menu-item-icon">🤝</span>
+            <span class="menu-item-copy">
+              <strong>Mã giới thiệu</strong>
+              <span>Giới thiệu bạn bè và nhận điểm PVI Care</span>
+            </span>
+            <span>›</span>
+          </button>
+
+          <button class="menu-item open-booking">
+            <span class="menu-item-icon">💬</span>
+            <span class="menu-item-copy">
+              <strong>Hỗ trợ và tư vấn</strong>
+              <span>Đặt lịch hoặc trao đổi với chuyên viên</span>
+            </span>
+            <span>›</span>
+          </button>
+
+          <button class="menu-item action-demo">
+            <span class="menu-item-icon">🔐</span>
+            <span class="menu-item-copy">
+              <strong>Bảo mật và quyền riêng tư</strong>
+              <span>Quản lý quyền sử dụng dữ liệu</span>
+            </span>
+            <span>›</span>
+          </button>
+        </div>
+      </section>
+
+      <section id="screen-members" class="screen">
+        <div class="quote-page-header">
+          <button type="button" class="quote-back go-home" aria-label="Quay lại">‹</button>
+          <h1>Hạng thành viên</h1>
+        </div>
+
+        <div class="member-card">
+          <span class="member-tier">HẠNG MEMBER</span>
+          <h2>Nguyễn Ngân</h2>
+          <p>Thành viên PVI Care</p>
+          <span class="member-card-number">PVC •••• 0726</span>
+          <span class="member-chip" aria-hidden="true"></span>
+        </div>
+
+        <div class="member-tabs">
+          <button type="button" class="member-tab active" data-member-panel="tier">Hạng thành viên</button>
+          <button type="button" class="member-tab" data-member-panel="info">Thông tin</button>
+        </div>
+
+        <div id="member-panel-tier" class="member-panel active">
+          <div class="member-progress-card">
+            <div class="member-progress-head">
+              <strong>Tiến độ lên hạng Silver</strong>
+              <span>85/150 điểm</span>
+            </div>
+            <div class="member-progress-track" role="progressbar" aria-label="Tiến độ lên hạng Silver" aria-valuemin="0" aria-valuemax="150" aria-valuenow="85">
+              <div class="member-progress-fill"></div>
+            </div>
+            <div class="member-progress-labels">
+              <span>Member · 0 điểm</span>
+              <span>Silver · 150 điểm</span>
+            </div>
+            <p class="member-progress-note">Bạn cần thêm <strong>65 điểm</strong> để đạt hạng Silver.</p>
+
+            <div class="member-levels">
+              <button type="button" class="member-level active" data-tier="Member" data-points="0 điểm" data-benefits="Tích điểm cơ bản|Đổi voucher bảo hiểm|Ưu đãi sinh nhật 5%"><strong>Member</strong>0+</button>
+              <button type="button" class="member-level" data-tier="Silver" data-points="150 điểm" data-benefits="Tích điểm x1,2|Ưu tiên tư vấn|Ưu đãi sinh nhật 10%"><strong>Silver</strong>150+</button>
+              <button type="button" class="member-level" data-tier="Gold" data-points="500 điểm" data-benefits="Tích điểm x1,5|Một voucher cứu hộ/năm|Ưu tiên hỗ trợ bồi thường"><strong>Gold</strong>500+</button>
+              <button type="button" class="member-level" data-tier="Diamond" data-points="1.000 điểm" data-benefits="Tích điểm x2|Chuyên viên chăm sóc riêng|Ưu đãi độc quyền PVI Care"><strong>Diamond</strong>1.000+</button>
+            </div>
+          </div>
+
+          <div class="member-benefits">
+            <h2>Quyền lợi hiện tại</h2>
+            <button type="button" class="member-benefit" data-benefit-title="Tích điểm PVI Care" data-benefit-icon="⭐" data-benefit-copy="Điểm được cộng khi bạn mua mới, tái tục hợp đồng hoặc hoàn thành các nhiệm vụ đủ điều kiện. Điểm có hiệu lực 12 tháng.">
+              <span class="member-benefit-icon">⭐</span>
+              <span><strong>Tích điểm PVI Care</strong><small>Nhận điểm khi tính phí, mua mới hoặc tái tục bảo hiểm.</small></span>
+            </button>
+            <button type="button" class="member-benefit" data-benefit-title="Đổi ưu đãi bảo hiểm" data-benefit-icon="🎟️" data-benefit-copy="Dùng điểm tại mục Quà tặng để đổi mã giảm phí TNDS, vật chất xe và voucher cứu hộ. Mỗi hợp đồng áp dụng một mã.">
+              <span class="member-benefit-icon">🎟️</span>
+              <span><strong>Đổi ưu đãi bảo hiểm</strong><small>Dùng điểm đổi mã giảm phí và voucher cứu hộ.</small></span>
+            </button>
+            <button type="button" class="member-benefit" data-benefit-title="Ưu đãi sinh nhật" data-benefit-icon="🎂" data-benefit-copy="Tặng ưu đãi 5% cho một giao dịch bảo hiểm đủ điều kiện trong tháng sinh nhật của thành viên.">
+              <span class="member-benefit-icon">🎂</span>
+              <span><strong>Ưu đãi sinh nhật 5%</strong><small>Dành cho một giao dịch trong tháng sinh nhật.</small></span>
+            </button>
+            <button type="button" class="member-benefit" data-benefit-title="Hỗ trợ ưu tiên" data-benefit-icon="🛡️" data-benefit-copy="Yêu cầu tư vấn và hỗ trợ hợp đồng của thành viên được ưu tiên tiếp nhận trong khung giờ phục vụ.">
+              <span class="member-benefit-icon">🛡️</span>
+              <span><strong>Hỗ trợ ưu tiên</strong><small>Ưu tiên tiếp nhận yêu cầu tư vấn và hỗ trợ hợp đồng.</small></span>
+            </button>
+          </div>
+        </div>
+
+        <div id="member-panel-info" class="member-panel">
+          <div class="member-stats">
+            <div class="member-stat">Điểm khả dụng<strong>85</strong></div>
+            <div class="member-stat used">Điểm đã sử dụng<strong>120</strong></div>
+          </div>
+          <div class="member-info-card">
+            <h2>Thông tin cá nhân</h2>
+            <div class="member-info-row"><span>Họ và tên</span><span>Nguyễn Ngân</span></div>
+            <div class="member-info-row"><span>Ngày sinh</span><span>**/**/1995</span></div>
+            <div class="member-info-row"><span>Điện thoại</span><span>*******678</span></div>
+            <div class="member-info-row"><span>Mã thành viên</span><span>PVC-260726</span></div>
+            <button type="button" id="edit-member-info" class="button button-outline button-full" style="margin-top:12px;">Chỉnh sửa thông tin</button>
+          </div>
+          <div class="points-history">
+            <h2>Lịch sử điểm gần đây</h2>
+            <div class="points-row"><span>Mua bảo hiểm TNDS<small>24/07/2026</small></span><strong>+50 điểm</strong></div>
+            <div class="points-row"><span>Hoàn tất tính phí vật chất xe<small>20/07/2026</small></span><strong>+20 điểm</strong></div>
+            <div class="points-row"><span>Tham gia Vòng quay An Tâm<small>18/07/2026</small></span><strong>+15 điểm</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-game" class="screen">
+        <div class="game-hero">
+          <div class="game-head">
+            <h1>PVI Rewards</h1>
+            <span class="game-points">⭐ <span id="game-points">85</span> điểm</span>
+          </div>
+          <div class="game-offer">
+            🎟️ Bạn đang có ưu đãi dành riêng
+            <small>Mở quà để xem ưu đãi phí bảo hiểm của bạn!</small>
+          </div>
+        </div>
+
+        <div class="game-tabs">
+          <button type="button" class="game-tab active" data-game-panel="minigame">🎮 Mini game</button>
+          <button type="button" class="game-tab" data-game-panel="rewards">🎁 Quà tặng</button>
+        </div>
+
+        <div id="game-panel-minigame" class="game-panel active">
+          <div class="game-card">
+            <div class="game-banner">
+              <small>VÒNG QUAY AN TÂM</small>
+              <strong>100% có quà</strong>
+              <span>Tích ưu đãi cho hành trình được bảo vệ</span>
+            </div>
+            <p style="margin:14px 0 0;font-size:13px;">Bạn có <strong><span id="spin-count">2</span> lượt quay</strong></p>
+            <div class="wheel-wrap">
+              <span class="wheel-pointer"></span>
+              <div class="lucky-wheel" id="lucky-wheel"></div>
+              <span class="wheel-center">PVI<br>CARE</span>
+              <span class="wheel-label one">50 điểm</span>
+              <span class="wheel-label two">5%</span>
+              <span class="wheel-label three">Cứu hộ</span>
+              <span class="wheel-label four">20 điểm</span>
+              <span class="wheel-label five">100K</span>
+              <span class="wheel-label six">10%</span>
+            </div>
+            <button type="button" id="spin-button" class="button button-primary spin-button">Quay ngay</button>
+            <div class="game-actions">
+              <button type="button" class="game-action" data-game-modal="game-rules-modal">📋 Thể lệ</button>
+              <button type="button" class="game-action" data-game-modal="game-rewards-modal">🏅 Giải thưởng</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="game-panel-rewards" class="game-panel">
+          <div class="voucher-list">
+            <article class="voucher-card">
+              <span class="voucher-icon">10%</span>
+              <span class="voucher-copy">
+                <strong>Giảm 10% phí TNDS</strong>
+                <small>Áp dụng khi mua mới bảo hiểm TNDS ô tô trên ứng dụng.</small>
+              </span>
+              <span class="voucher-cost">85 điểm<button type="button" class="redeem-reward" data-cost="85" data-reward="Giảm 10% phí TNDS">Đổi quà</button></span>
+            </article>
+            <article class="voucher-card">
+              <span class="voucher-icon">🚗</span>
+              <span class="voucher-copy">
+                <strong>Voucher cứu hộ 100K</strong>
+                <small>Khấu trừ 100.000đ cho một lần sử dụng dịch vụ cứu hộ liên kết.</small>
+              </span>
+              <span class="voucher-cost">60 điểm<button type="button" class="redeem-reward" data-cost="60" data-reward="Voucher cứu hộ 100K">Đổi quà</button></span>
+            </article>
+            <article class="voucher-card">
+              <span class="voucher-icon">5%</span>
+              <span class="voucher-copy">
+                <strong>Giảm 5% phí vật chất xe</strong>
+                <small>Ưu đãi tham khảo khi hoàn tất tư vấn và đủ điều kiện cấp đơn.</small>
+              </span>
+              <span class="voucher-cost">120 điểm<button type="button" class="redeem-reward" data-cost="120" data-reward="Giảm 5% phí vật chất xe">Đổi quà</button></span>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="screen-quote" class="screen">
+        <div class="quote-page-header">
+          <button type="button" class="quote-back" id="quote-back" aria-label="Quay lại">‹</button>
+          <h1 id="quote-page-title">Tính phí bảo hiểm xe</h1>
+        </div>
+
+        <div id="quote-chooser">
+          <p class="quote-intro">Chọn nhu cầu của bạn để xem đúng quy trình và mức phí phù hợp.</p>
+          <div class="quote-choice-grid">
+            <button type="button" class="quote-choice" data-quote-flow="tnds">
+              <span class="quote-choice-icon">📄</span>
+              <span>
+                <strong>TNDS ô tô bắt buộc</strong>
+                <small>Tính phí nhanh, hoàn tất mua và nhận giấy chứng nhận online.</small>
+              </span>
+              <span class="quote-choice-arrow">›</span>
+            </button>
+            <button type="button" class="quote-choice" data-quote-flow="physical">
+              <span class="quote-choice-icon">🚙</span>
+              <span>
+                <strong>Bảo hiểm vật chất xe</strong>
+                <small>Nhận phí tham khảo và tư vấn quyền lợi theo thông tin xe.</small>
+              </span>
+              <span class="quote-choice-arrow">›</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="quote-flow" id="quote-flow-tnds">
+          <div class="quote-flow-card">
+            <h2>TNDS ô tô bắt buộc</h2>
+            <p>Điền thông tin cơ bản để xem mức phí theo loại xe.</p>
+            <div class="form-grid">
+              <div class="field">
+                <label for="tnds-vehicle">Loại xe</label>
+                <select id="tnds-vehicle">
+                  <option value="437000">Ô tô dưới 6 chỗ, không kinh doanh</option>
+                  <option value="794000">Ô tô từ 6–11 chỗ, không kinh doanh</option>
+                  <option value="933000">Xe bán tải</option>
+                  <option value="1034000">Ô tô kinh doanh vận tải</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="tnds-term">Thời hạn bảo hiểm</label>
+                <select id="tnds-term">
+                  <option value="1">1 năm</option>
+                  <option value="2">2 năm</option>
+                  <option value="3">3 năm</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="tnds-plate">Biển số xe</label>
+                <input id="tnds-plate" type="text" placeholder="Ví dụ: 30A-123.45" />
+              </div>
+              <div class="quote-promo">
+                <button type="button" class="quote-promo-title toggle-vouchers" data-target="tnds-vouchers">
+                  <span>🎟️ Voucher của bạn</span><span class="voucher-summary">Xem 2 voucher ›</span>
+                </button>
+                <div class="quote-voucher-list" id="tnds-vouchers">
+                  <div class="quote-voucher" role="button" tabindex="0" data-flow="tnds" data-code="PVI-TNDS10" data-discount="10">
+                    <span class="quote-voucher-icon">10%</span>
+                    <span><strong>Giảm 10% phí TNDS</strong><small>HSD 31/12/2026 · Tối đa 100.000đ</small></span>
+                    <span class="quote-voucher-check">Chọn</span>
+                  </div>
+                  <div class="quote-voucher" role="button" tabindex="0" data-flow="tnds" data-code="PVI-NEW50" data-discount="50000">
+                    <span class="quote-voucher-icon">50K</span>
+                    <span><strong>Giảm 50.000đ cho khách hàng mới</strong><small>Áp dụng hợp đồng TNDS đầu tiên</small></span>
+                    <span class="quote-voucher-check">Chọn</span>
+                  </div>
+                </div>
+                <div class="quote-referral">
+                  <label for="tnds-referral">Mã giới thiệu</label>
+                  <div class="quote-referral-row">
+                    <input id="tnds-referral" placeholder="Nhập mã nếu có" />
+                    <button type="button" class="apply-referral" data-input="tnds-referral">Áp dụng</button>
+                  </div>
+                </div>
+              </div>
+              <button type="button" id="calculate-tnds" class="button button-primary button-full">Xem phí và mua ngay</button>
+            </div>
+            <div id="tnds-result" class="quote-result" aria-live="polite">
+              <small>Phí bảo hiểm dự kiến</small>
+              <strong id="tnds-result-value">0đ</strong>
+              <p>Mức phí minh họa đã gồm VAT. Thông tin chính thức sẽ được xác nhận trước khi thanh toán.</p>
+              <button type="button" id="buy-tnds" class="button button-primary button-full">Tiếp tục mua online</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-flow" id="quote-flow-physical">
+          <div class="quote-flow-card">
+            <h2>Bảo hiểm vật chất xe</h2>
+            <p>Cung cấp thông tin để PVI đánh giá nhu cầu và tư vấn mức phí phù hợp.</p>
+            <div class="quote-note">Sản phẩm dành cho xe không kinh doanh, ưu tiên xe từ 8 năm tuổi trở xuống và có nhu cầu mua hoặc tái tục trong 30 ngày.</div>
+            <div class="form-grid">
+              <div class="field">
+                <label for="physical-brand">Hãng xe</label>
+                <select id="physical-brand">
+                  <option value="">Chọn hãng xe</option>
+                  <option>Toyota</option>
+                  <option>Honda</option>
+                  <option>Ford</option>
+                  <option>Hyundai</option>
+                  <option>Mercedes-Benz</option>
+                  <option>VinFast</option>
+                  <option>Khác</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="physical-model">Dòng xe</label>
+                <input id="physical-model" type="text" placeholder="Ví dụ: Camry 2.0Q" />
+              </div>
+              <div class="field">
+                <label for="physical-year">Năm sản xuất</label>
+                <select id="physical-year">
+                  <option value="">Chọn năm sản xuất</option>
+                  <option>2026</option><option>2025</option><option>2024</option>
+                  <option>2023</option><option>2022</option><option>2021</option>
+                  <option>2020</option><option>2019</option><option>2018</option>
+                  <option value="older">Trước năm 2018</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="physical-value">Giá trị xe dự kiến</label>
+                <input id="physical-value" type="number" min="100000000" placeholder="Ví dụ: 800000000" />
+              </div>
+              <div class="field">
+                <label for="physical-location">Tỉnh/thành xe đang sử dụng</label>
+                <select id="physical-location">
+                  <option value="">Chọn tỉnh/thành</option>
+                  <option>Hà Nội</option><option>TP. Hồ Chí Minh</option>
+                  <option>Đà Nẵng</option><option>Hải Phòng</option>
+                  <option>Cần Thơ</option><option>Quảng Ninh</option>
+                  <option>Đồng Nai</option><option>Bình Dương</option>
+                  <option>Vũng Tàu</option><option>Khánh Hòa</option>
+                  <option>Thái Nguyên</option><option value="other">Tỉnh/thành khác</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="physical-usage">Mục đích sử dụng</label>
+                <select id="physical-usage">
+                  <option value="personal">Không kinh doanh</option>
+                  <option value="business">Kinh doanh vận tải</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="physical-need">Nhu cầu hiện tại</label>
+                <select id="physical-need">
+                  <option value="">Chọn nhu cầu</option>
+                  <option value="new">Xe mới mua</option>
+                  <option value="renew">Tái tục trong vòng 30 ngày</option>
+                  <option value="later">Chưa có nhu cầu trong 30 ngày</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="physical-name">Họ và tên</label>
+                <input id="physical-name" type="text" placeholder="Nhập họ và tên" />
+              </div>
+              <div class="field">
+                <label for="physical-phone">Số điện thoại</label>
+                <input id="physical-phone" type="tel" inputmode="tel" placeholder="Ví dụ: 0912 345 678" />
+              </div>
+              <div class="quote-promo">
+                <button type="button" class="quote-promo-title toggle-vouchers" data-target="physical-vouchers">
+                  <span>🎟️ Voucher của bạn</span><span class="voucher-summary">Xem 2 voucher ›</span>
+                </button>
+                <div class="quote-voucher-list" id="physical-vouchers">
+                  <div class="quote-voucher" role="button" tabindex="0" data-flow="physical" data-code="PVI-VCX05" data-discount="5">
+                    <span class="quote-voucher-icon">5%</span>
+                    <span><strong>Ưu đãi 5% phí vật chất xe</strong><small>Áp dụng khi đủ điều kiện cấp đơn</small></span>
+                    <span class="quote-voucher-check">Chọn</span>
+                  </div>
+                  <div class="quote-voucher" role="button" tabindex="0" data-flow="physical" data-code="PVI-CUUHO100" data-discount="0">
+                    <span class="quote-voucher-icon">🚗</span>
+                    <span><strong>Voucher cứu hộ 100.000đ</strong><small>Tặng kèm khi phát hành hợp đồng đủ điều kiện</small></span>
+                    <span class="quote-voucher-check">Chọn</span>
+                  </div>
+                </div>
+                <div class="quote-referral">
+                  <label for="physical-referral">Mã giới thiệu</label>
+                  <div class="quote-referral-row">
+                    <input id="physical-referral" placeholder="Nhập mã nếu có" />
+                    <button type="button" class="apply-referral" data-input="physical-referral">Áp dụng</button>
+                  </div>
+                </div>
+              </div>
+              <label class="consent-row">
+                <input id="physical-consent" type="checkbox" />
+                <span>Tôi đồng ý để PVI liên hệ tư vấn về quyền lợi và mức phí bảo hiểm.</span>
+              </label>
+              <button type="button" id="submit-physical" class="button button-primary button-full">Nhận báo phí từ chuyên viên</button>
+            </div>
+            <div id="physical-result" class="quote-result" aria-live="polite">
+              <small>Phí tham khảo</small>
+              <strong id="physical-result-value">Từ 0đ/năm</strong>
+              <p id="physical-result-copy">Chuyên viên PVI sẽ liên hệ để xác nhận thông tin, quyền lợi và mức phí chính thức.</p>
+              <button type="button" id="finish-physical" class="button button-primary button-full">Hoàn tất</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Điều hướng chính">
+      <button class="nav-item active" data-screen="home">
+        <span class="nav-icon">⌂</span>
+        <span>Trang chủ</span>
+      </button>
+      <button class="nav-item" data-screen="products">
+        <span class="nav-icon">🛡</span>
+        <span>Sản phẩm</span>
+      </button>
+      <button class="nav-item" data-screen="game">
+        <span class="nav-icon">🎮</span>
+        <span>Minigame</span>
+      </button>
+      <button class="nav-item" data-screen="claims">
+        <span class="nav-icon">☂</span>
+        <span>Bồi thường</span>
+      </button>
+      <button class="nav-item" data-screen="account">
+        <span class="nav-icon">◉</span>
+        <span>Tài khoản</span>
+      </button>
+    </nav>
+  </div>
+
+  <div id="referral-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="referral-title">
+    <div class="modal-panel">
+      <div class="modal-title-row">
+        <h2 id="referral-title">Giới thiệu bạn bè</h2>
+        <button class="close-button" data-close="referral-modal" aria-label="Đóng">✕</button>
+      </div>
+      <div class="game-modal-copy">
+        <div class="game-modal-icon">🤝</div>
+        <p>Chia sẻ mã của bạn. Khi người được giới thiệu hoàn tất hợp đồng bảo hiểm đầu tiên, cả hai sẽ nhận điểm PVI Care.</p>
+        <div class="referral-code-box">
+          <small>Mã giới thiệu của bạn</small>
+          <strong id="referral-code">NGANPVI85</strong>
+        </div>
+        <div class="referral-actions">
+          <button type="button" id="copy-referral" class="button button-outline">Sao chép mã</button>
+          <button type="button" id="share-referral" class="button button-primary">Chia sẻ</button>
+        </div>
+        <p style="margin-top:13px;color:var(--muted);font-size:10px;">Bạn nhận 50 điểm khi người được giới thiệu mua thành công hợp đồng đủ điều kiện.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="member-tier-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="member-tier-title">
+    <div class="modal-panel">
+      <div class="modal-title-row">
+        <h2 id="member-tier-title">Hạng Member</h2>
+        <button class="close-button" data-close="member-tier-modal" aria-label="Đóng">✕</button>
+      </div>
+      <div class="game-modal-copy">
+        <div class="game-modal-icon" id="member-tier-icon">💎</div>
+        <p id="member-tier-requirement">Yêu cầu từ 0 điểm tích lũy.</p>
+        <div class="member-modal-list" id="member-tier-benefits"></div>
+        <button type="button" class="button button-primary button-full" data-close="member-tier-modal">Đã hiểu</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="member-benefit-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="member-benefit-title">
+    <div class="modal-panel">
+      <div class="modal-title-row">
+        <h2 id="member-benefit-title">Chi tiết quyền lợi</h2>
+        <button class="close-button" data-close="member-benefit-modal" aria-label="Đóng">✕</button>
+      </div>
+      <div class="game-modal-copy">
+        <div class="game-modal-icon" id="member-benefit-modal-icon">⭐</div>
+        <p id="member-benefit-modal-copy"></p>
+        <button type="button" class="button button-primary button-full" id="member-benefit-action">Khám phá ưu đãi</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="member-edit-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="member-edit-title">
+    <div class="modal-panel">
+      <div class="modal-title-row">
+        <h2 id="member-edit-title">Chỉnh sửa thông tin</h2>
+        <button class="close-button" data-close="member-edit-modal" aria-label="Đóng">✕</button>
+      </div>
+      <div class="form-grid">
+        <div class="field"><label for="member-edit-name">Họ và tên</label><input id="member-edit-name" value="Nguyễn Ngân" /></div>
+        <div class="field"><label for="member-edit-birthday">Ngày sinh</label><input id="member-edit-birthday" type="date" /></div>
+        <div class="field"><label for="member-edit-phone">Số điện thoại</label><input id="member-edit-phone" type="tel" value="0912345678" /></div>
+        <button type="button" id="save-member-info" class="button button-primary button-full">Lưu thay đổi</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="game-rules-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="game-rules-title">
+    <div class="modal-panel">
+      <div class="modal-title-row">
+        <h2 id="game-rules-title">Thể lệ Minigame</h2>
+        <button class="close-button" data-close="game-rules-modal" aria-label="Đóng">✕</button>
+      </div>
+      <div class="game-modal-copy game-rules">
+        <div class="game-modal-icon">🎡</div>
+        <p><strong>Vòng quay An Tâm dành cho khách hàng PVI Care.</strong></p>
+        <p>1. Mỗi khách hàng được tặng 2 lượt quay khởi đầu trong thời gian chương trình.</p>
+        <p>2. Nhận thêm lượt khi hoàn tất tính phí TNDS, gửi yêu cầu tư vấn vật chất xe hoặc tái tục hợp đồng đủ điều kiện.</p>
+        <p>3. Mã ưu đãi được lưu trong mục Quà tặng và chỉ áp dụng cho đúng sản phẩm ghi trên voucher.</p>
+        <p>4. Quà không quy đổi thành tiền mặt. Mỗi hợp đồng chỉ sử dụng một mã ưu đãi.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="game-rewards-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="game-rewards-title">
+    <div class="modal-panel">
+      <div class="modal-title-row">
+        <h2 id="game-rewards-title">Giải thưởng</h2>
+        <button class="close-button" data-close="game-rewards-modal" aria-label="Đóng">✕</button>
+      </div>
+      <div class="game-modal-copy">
+        <div class="game-modal-icon">🎁</div>
+        <p>Vòng quay có thể nhận: mã giảm phí TNDS 5–10%, voucher cứu hộ 100.000đ, ưu đãi vật chất xe và 20–50 điểm PVI Care.</p>
+        <button type="button" class="button button-primary button-full show-reward-tab">Xem quà tặng</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="game-result-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="game-result-title">
+    <div class="modal-panel">
+      <button class="close-button" data-close="game-result-modal" aria-label="Đóng" style="float:right;">✕</button>
+      <div class="game-modal-copy">
+        <div class="game-modal-icon">🎉</div>
+        <h2 id="game-result-title">Chúc mừng bạn!</h2>
+        <p id="game-result-text">Bạn đã nhận được một phần quà từ PVI Care.</p>
+        <div class="reward-code" id="game-result-code">PVI-ANTAM</div>
+        <button type="button" class="button button-primary button-full show-reward-tab">Xem quà đã nhận</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="game-notice-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="game-notice-title">
+    <div class="modal-panel">
+      <button class="close-button" data-close="game-notice-modal" aria-label="Đóng" style="float:right;">✕</button>
+      <div class="game-modal-copy">
+        <div class="game-modal-icon" id="game-notice-icon">🔔</div>
+        <h2 id="game-notice-title">Bạn chưa đủ điểm</h2>
+        <p id="game-notice-text">Hoàn thành các nhiệm vụ bảo hiểm để tích thêm điểm PVI Care.</p>
+        <button type="button" class="button button-primary button-full" data-close="game-notice-modal">Quay về chương trình</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="claim-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="claim-title">
+    <div class="modal-panel">
+      <div class="modal-handle"></div>
+      <div class="modal-title-row">
+        <h2 id="claim-title">Khai báo tổn thất mới</h2>
+        <button class="close-button" data-close="claim-modal" aria-label="Đóng">✕</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="claim-policy">Chọn hợp đồng</label>
+          <select id="claim-policy">
+            <option>PVI-OTO-260715 · Xe 30A-123.45</option>
+            <option>PVI-CN-260102 · Tai nạn cá nhân</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="claim-type">Loại sự cố</label>
+          <select id="claim-type">
+            <option>Va chạm giao thông</option>
+            <option>Cháy nổ</option>
+            <option>Ngập nước</option>
+            <option>Tai nạn cá nhân</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="claim-date">Thời gian xảy ra</label>
+          <input id="claim-date" type="datetime-local" />
+        </div>
+
+        <div class="field">
+          <label for="claim-note">Mô tả ngắn</label>
+          <textarea id="claim-note" placeholder="Mô tả sự cố, địa điểm, tình trạng tổn thất..."></textarea>
+        </div>
+
+        <div class="field">
+          <label>Hình ảnh/chứng từ</label>
+          <button class="button button-outline button-full action-demo">＋ Tải ảnh hoặc chứng từ</button>
+        </div>
+
+        <button id="submit-claim" class="button button-primary button-full">Gửi khai báo</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="booking-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="booking-title">
+    <div class="modal-panel">
+      <div class="modal-handle"></div>
+      <div class="modal-title-row">
+        <h2 id="booking-title">Đặt lịch tư vấn</h2>
+        <button class="close-button" data-close="booking-modal" aria-label="Đóng">✕</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="booking-product">Sản phẩm quan tâm</label>
+          <select id="booking-product">
+            <option>Bảo hiểm vật chất xe ô tô</option>
+            <option>Bảo hiểm tai nạn cá nhân</option>
+            <option>Bảo hiểm du lịch</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="booking-channel">Hình thức tư vấn</label>
+          <select id="booking-channel">
+            <option>Gọi điện thoại</option>
+            <option>Chat Zalo</option>
+            <option>Gặp trực tiếp</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="booking-date">Ngày tư vấn</label>
+          <input id="booking-date" type="date" />
+        </div>
+
+        <div class="field">
+          <label for="booking-time">Khung giờ</label>
+          <select id="booking-time">
+            <option>09:00 - 10:00</option>
+            <option>10:00 - 11:00</option>
+            <option>14:00 - 15:00</option>
+            <option>15:00 - 16:00</option>
+          </select>
+        </div>
+
+        <button id="submit-booking" class="button button-primary button-full">Xác nhận lịch tư vấn</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <script>
+    const screens = document.querySelectorAll(".screen");
+    const navItems = document.querySelectorAll(".nav-item");
+    const modals = document.querySelectorAll(".modal");
+    const toast = document.getElementById("toast");
+
+    function showScreen(name) {
+      screens.forEach((screen) => {
+        screen.classList.toggle("active", screen.id === `screen-${name}`);
+      });
+
+      navItems.forEach((item) => {
+        item.classList.toggle("active", item.dataset.screen === name);
+      });
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.add("open");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("open");
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    navItems.forEach((item) => {
+      item.addEventListener("click", () => showScreen(item.dataset.screen));
+    });
+
+    document.querySelectorAll(".go-products").forEach((button) => {
+      button.addEventListener("click", () => showScreen("products"));
+    });
+
+    document.querySelectorAll(".go-policies").forEach((button) => {
+      button.addEventListener("click", () => showScreen("policies"));
+    });
+
+    document.querySelectorAll(".go-members").forEach((button) => {
+      button.addEventListener("click", () => showScreen("members"));
+    });
+
+    document.querySelectorAll(".go-home").forEach((button) => {
+      button.addEventListener("click", () => showScreen("home"));
+    });
+
+    document.getElementById("open-referral").addEventListener("click", () => {
+      openModal("referral-modal");
+    });
+
+    async function copyReferralCode() {
+      const code = document.getElementById("referral-code").textContent.trim();
+      try {
+        await navigator.clipboard.writeText(code);
+      } catch (error) {
+        const helper = document.createElement("textarea");
+        helper.value = code;
+        document.body.appendChild(helper);
+        helper.select();
+        document.execCommand("copy");
+        helper.remove();
+      }
+      showToast("Đã sao chép mã giới thiệu.");
+    }
+
+    document.getElementById("copy-referral").addEventListener("click", copyReferralCode);
+
+    document.getElementById("share-referral").addEventListener("click", async () => {
+      const code = document.getElementById("referral-code").textContent.trim();
+      const shareData = {
+        title: "Mời bạn tham gia PVI Care",
+        text: `Dùng mã ${code} khi tham gia PVI Care để cùng nhận điểm thành viên.`
+      };
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+          return;
+        } catch (error) {
+          if (error.name === "AbortError") return;
+        }
+      }
+      await copyReferralCode();
+    });
+
+    document.querySelectorAll(".open-quote").forEach((button) => {
+      button.addEventListener("click", () => {
+        resetQuoteScreen();
+        showScreen("quote");
+      });
+    });
+
+    document.querySelectorAll(".open-claim").forEach((button) => {
+      button.addEventListener("click", () => openModal("claim-modal"));
+    });
+
+    document.querySelectorAll(".open-booking").forEach((button) => {
+      button.addEventListener("click", () => openModal("booking-modal"));
+    });
+
+    document.querySelectorAll("[data-close]").forEach((button) => {
+      button.addEventListener("click", () => closeModal(button.dataset.close));
+    });
+
+    modals.forEach((modal) => {
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) closeModal(modal.id);
+      });
+    });
+
+    document.querySelectorAll(".action-demo").forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!button.closest(".modal")) {
+          showToast("Đây là thao tác minh họa trong prototype.");
+        }
+      });
+    });
+
+    const memberTabs = document.querySelectorAll(".member-tab");
+    const memberPanels = document.querySelectorAll(".member-panel");
+
+    memberTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        memberTabs.forEach((item) => item.classList.toggle("active", item === tab));
+        memberPanels.forEach((panel) => {
+          panel.classList.toggle("active", panel.id === `member-panel-${tab.dataset.memberPanel}`);
+        });
+      });
+    });
+
+    document.querySelectorAll("button.member-level").forEach((level) => {
+      level.addEventListener("click", () => {
+        document.getElementById("member-tier-title").textContent = `Hạng ${level.dataset.tier}`;
+        document.getElementById("member-tier-requirement").textContent =
+          `Yêu cầu từ ${level.dataset.points} tích lũy trong chu kỳ xét hạng.`;
+        const benefits = document.getElementById("member-tier-benefits");
+        benefits.innerHTML = "";
+        level.dataset.benefits.split("|").forEach((benefit) => {
+          const item = document.createElement("span");
+          item.textContent = `✓ ${benefit}`;
+          benefits.appendChild(item);
+        });
+        openModal("member-tier-modal");
+      });
+    });
+
+    document.querySelectorAll("button.member-benefit").forEach((benefit) => {
+      benefit.addEventListener("click", () => {
+        document.getElementById("member-benefit-title").textContent = benefit.dataset.benefitTitle;
+        document.getElementById("member-benefit-modal-icon").textContent = benefit.dataset.benefitIcon;
+        document.getElementById("member-benefit-modal-copy").textContent = benefit.dataset.benefitCopy;
+        openModal("member-benefit-modal");
+      });
+    });
+
+    document.getElementById("member-benefit-action").addEventListener("click", () => {
+      closeModal("member-benefit-modal");
+      showScreen("game");
+      showGamePanel("rewards");
+    });
+
+    document.getElementById("edit-member-info").addEventListener("click", () => {
+      openModal("member-edit-modal");
+    });
+
+    document.getElementById("save-member-info").addEventListener("click", () => {
+      closeModal("member-edit-modal");
+      showToast("Thông tin thành viên đã được cập nhật.");
+    });
+
+    const gameTabs = document.querySelectorAll(".game-tab");
+    const gamePanels = document.querySelectorAll(".game-panel");
+    const luckyWheel = document.getElementById("lucky-wheel");
+    const spinCountElement = document.getElementById("spin-count");
+    const gamePointsElement = document.getElementById("game-points");
+    let spinCount = 2;
+    let gamePoints = 85;
+    let wheelRotation = 0;
+    let wheelSpinning = false;
+
+    function showGamePanel(name) {
+      gameTabs.forEach((tab) => {
+        tab.classList.toggle("active", tab.dataset.gamePanel === name);
+      });
+      gamePanels.forEach((panel) => {
+        panel.classList.toggle("active", panel.id === `game-panel-${name}`);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    gameTabs.forEach((tab) => {
+      tab.addEventListener("click", () => showGamePanel(tab.dataset.gamePanel));
+    });
+
+    document.querySelectorAll("[data-game-modal]").forEach((button) => {
+      button.addEventListener("click", () => openModal(button.dataset.gameModal));
+    });
+
+    document.querySelectorAll(".show-reward-tab").forEach((button) => {
+      button.addEventListener("click", () => {
+        modals.forEach((modal) => modal.classList.remove("open"));
+        showScreen("game");
+        showGamePanel("rewards");
+      });
+    });
+
+    document.getElementById("spin-button").addEventListener("click", () => {
+      if (wheelSpinning) return;
+
+      if (spinCount <= 0) {
+        document.getElementById("game-notice-icon").textContent = "❌";
+        document.getElementById("game-notice-title").textContent = "Bạn đã hết lượt quay";
+        document.getElementById("game-notice-text").textContent =
+          "Hãy hoàn tất tính phí hoặc tái tục hợp đồng để nhận thêm lượt quay.";
+        openModal("game-notice-modal");
+        return;
+      }
+
+      const rewards = [
+        { label: "20 điểm PVI Care", code: "ĐÃ CỘNG ĐIỂM", points: 20 },
+        { label: "Voucher cứu hộ 100.000đ", code: "PVI-CUUHO100" },
+        { label: "Giảm 5% phí TNDS ô tô", code: "PVI-TNDS05" },
+        { label: "50 điểm PVI Care", code: "ĐÃ CỘNG ĐIỂM", points: 50 }
+      ];
+      const reward = rewards[Math.floor(Math.random() * rewards.length)];
+
+      wheelSpinning = true;
+      spinCount -= 1;
+      spinCountElement.textContent = spinCount;
+      wheelRotation += 1440 + Math.floor(Math.random() * 360);
+      luckyWheel.style.transform = `rotate(${wheelRotation}deg)`;
+
+      setTimeout(() => {
+        wheelSpinning = false;
+        if (reward.points) {
+          gamePoints += reward.points;
+          gamePointsElement.textContent = gamePoints;
+        }
+        document.getElementById("game-result-text").textContent = `Bạn đã nhận ${reward.label}.`;
+        document.getElementById("game-result-code").textContent = reward.code;
+        openModal("game-result-modal");
+      }, 2500);
+    });
+
+    document.querySelectorAll(".redeem-reward").forEach((button) => {
+      button.addEventListener("click", () => {
+        const cost = Number(button.dataset.cost);
+        if (gamePoints < cost) {
+          document.getElementById("game-notice-icon").textContent = "🔔";
+          document.getElementById("game-notice-title").textContent = `Bạn cần ${cost} điểm để đổi quà`;
+          document.getElementById("game-notice-text").textContent =
+            `Điểm hiện có: ${gamePoints} điểm. Hoàn thành tính phí hoặc tái tục hợp đồng để tích thêm điểm.`;
+          openModal("game-notice-modal");
+          return;
+        }
+
+        gamePoints -= cost;
+        gamePointsElement.textContent = gamePoints;
+        document.getElementById("game-result-text").textContent =
+          `Bạn đã đổi thành công ${button.dataset.reward}.`;
+        document.getElementById("game-result-code").textContent =
+          `PVI-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+        openModal("game-result-modal");
+      });
+    });
+
+    const bannerSlider = document.getElementById("banner-slider");
+    const bannerPrev = document.getElementById("banner-prev");
+    const bannerNext = document.getElementById("banner-next");
+    const bannerDots = document.getElementById("banner-dots");
+    const bannerCount = bannerSlider.children.length;
+    let bannerIndex = 0;
+
+    function updateBanner() {
+      bannerSlider.style.transform = `translateX(-${bannerIndex * 100}%)`;
+      bannerDots.querySelectorAll(".banner-dot").forEach((dot, index) => {
+        dot.classList.toggle("active", index === bannerIndex);
+      });
+    }
+
+    function createBannerDots() {
+      for (let i = 0; i < bannerCount; i += 1) {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "banner-dot";
+        dot.setAttribute("aria-label", `Chuyển đến ảnh ${i + 1}`);
+        dot.addEventListener("click", () => {
+          bannerIndex = i;
+          updateBanner();
+        });
+        bannerDots.appendChild(dot);
+      }
+    }
+
+    bannerPrev.addEventListener("click", () => {
+      bannerIndex = (bannerIndex - 1 + bannerCount) % bannerCount;
+      updateBanner();
+    });
+
+    bannerNext.addEventListener("click", () => {
+      bannerIndex = (bannerIndex + 1) % bannerCount;
+      updateBanner();
+    });
+
+    createBannerDots();
+    updateBanner();
+
+    const filterChips = document.querySelectorAll(".filter-chip");
+    const productCards = document.querySelectorAll(".product-list .product-card");
+
+    filterChips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        filterChips.forEach((item) => item.classList.remove("active"));
+        chip.classList.add("active");
+
+        const category = chip.textContent.trim();
+
+        productCards.forEach((card) => {
+          const shouldShow = category === "Tất cả" || card.dataset.category === category;
+          card.style.display = shouldShow ? "grid" : "none";
+        });
+      });
+    });
+
+    const quoteChooser = document.getElementById("quote-chooser");
+    const quoteFlows = document.querySelectorAll(".quote-flow");
+    const quotePageTitle = document.getElementById("quote-page-title");
+
+    function resetQuoteScreen() {
+      quoteChooser.style.display = "block";
+      quoteFlows.forEach((flow) => flow.classList.remove("active"));
+      quotePageTitle.textContent = "Tính phí bảo hiểm xe";
+      document.getElementById("tnds-result").classList.remove("show");
+      document.getElementById("physical-result").classList.remove("show");
+    }
+
+    document.querySelectorAll("[data-quote-flow]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const flowName = button.dataset.quoteFlow;
+        quoteChooser.style.display = "none";
+        quoteFlows.forEach((flow) => {
+          flow.classList.toggle("active", flow.id === `quote-flow-${flowName}`);
+        });
+        quotePageTitle.textContent =
+          flowName === "tnds" ? "TNDS ô tô bắt buộc" : "Bảo hiểm vật chất xe";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+
+    document.getElementById("quote-back").addEventListener("click", () => {
+      const activeFlow = document.querySelector(".quote-flow.active");
+      if (activeFlow) {
+        resetQuoteScreen();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        showScreen("home");
+      }
+    });
+
+    const selectedQuoteVouchers = { tnds: null, physical: null };
+
+    document.querySelectorAll(".toggle-vouchers").forEach((button) => {
+      button.addEventListener("click", () => {
+        const list = document.getElementById(button.dataset.target);
+        list.classList.toggle("open");
+        button.querySelector(".voucher-summary").textContent =
+          list.classList.contains("open") ? "Thu gọn ⌃" : "Xem voucher ›";
+      });
+    });
+
+    function selectQuoteVoucher(voucher) {
+      const flow = voucher.dataset.flow;
+      const wasSelected = voucher.classList.contains("selected");
+      document.querySelectorAll(`.quote-voucher[data-flow="${flow}"]`).forEach((item) => {
+        item.classList.remove("selected");
+        item.querySelector(".quote-voucher-check").textContent = "Chọn";
+      });
+      selectedQuoteVouchers[flow] = null;
+
+      if (!wasSelected) {
+        voucher.classList.add("selected");
+        voucher.querySelector(".quote-voucher-check").textContent = "✓";
+        selectedQuoteVouchers[flow] = {
+          code: voucher.dataset.code,
+          discount: Number(voucher.dataset.discount)
+        };
+        showToast(`Đã chọn voucher ${voucher.dataset.code}.`);
+      }
+    }
+
+    document.querySelectorAll(".quote-voucher").forEach((voucher) => {
+      voucher.addEventListener("click", () => selectQuoteVoucher(voucher));
+      voucher.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          selectQuoteVoucher(voucher);
+        }
+      });
+    });
+
+    document.querySelectorAll(".apply-referral").forEach((button) => {
+      button.addEventListener("click", () => {
+        const input = document.getElementById(button.dataset.input);
+        const code = input.value.trim().toUpperCase();
+        input.value = code;
+        if (!/^[A-Z0-9]{6,12}$/.test(code)) {
+          showToast("Mã giới thiệu chưa đúng định dạng.");
+          return;
+        }
+        input.dataset.applied = "true";
+        input.style.borderColor = "#15935d";
+        button.textContent = "✓ Đã áp dụng";
+        showToast("Đã ghi nhận mã giới thiệu.");
+      });
+    });
+
+    document.getElementById("calculate-tnds").addEventListener("click", () => {
+      const baseFee = Number(document.getElementById("tnds-vehicle").value);
+      const term = Number(document.getElementById("tnds-term").value);
+      const originalTotal = baseFee * term;
+      const voucher = selectedQuoteVouchers.tnds;
+      let total = originalTotal;
+      if (voucher) {
+        total = voucher.discount <= 100
+          ? originalTotal * (1 - voucher.discount / 100)
+          : originalTotal - voucher.discount;
+      }
+      total = Math.max(Math.round(total), 0);
+      document.getElementById("tnds-result-value").textContent =
+        `${total.toLocaleString("vi-VN")}đ/${term === 1 ? "năm" : `${term} năm`}`;
+      document.querySelector("#tnds-result p").textContent = voucher
+        ? `Đã áp dụng voucher ${voucher.code}, tiết kiệm ${(originalTotal - total).toLocaleString("vi-VN")}đ. Phí chính thức sẽ được xác nhận trước thanh toán.`
+        : "Mức phí minh họa đã gồm VAT. Thông tin chính thức sẽ được xác nhận trước khi thanh toán.";
+      document.getElementById("tnds-result").classList.add("show");
+    });
+
+    document.getElementById("buy-tnds").addEventListener("click", () => {
+      showToast("Đã lưu mức phí. Tiếp theo là bước nhập thông tin chủ xe và thanh toán.");
+    });
+
+    document.getElementById("submit-physical").addEventListener("click", () => {
+      const brand = document.getElementById("physical-brand").value;
+      const model = document.getElementById("physical-model").value.trim();
+      const year = document.getElementById("physical-year").value;
+      const vehicleValue = Number(document.getElementById("physical-value").value);
+      const location = document.getElementById("physical-location").value;
+      const usage = document.getElementById("physical-usage").value;
+      const need = document.getElementById("physical-need").value;
+      const name = document.getElementById("physical-name").value.trim();
+      const phone = document.getElementById("physical-phone").value.replace(/\s/g, "");
+      const consent = document.getElementById("physical-consent").checked;
+
+      if (!brand || !model || !year || !vehicleValue || !location || !need || !name || !phone) {
+        showToast("Vui lòng điền đầy đủ thông tin xe và thông tin liên hệ.");
+        return;
+      }
+
+      if (!/^(0|\+84)[0-9]{9,10}$/.test(phone)) {
+        showToast("Số điện thoại chưa đúng định dạng.");
+        return;
+      }
+
+      if (!consent) {
+        showToast("Vui lòng xác nhận đồng ý nhận tư vấn từ PVI.");
+        return;
+      }
+
+      const result = document.getElementById("physical-result");
+      const resultValue = document.getElementById("physical-result-value");
+      const resultCopy = document.getElementById("physical-result-copy");
+      const excludedLocation = location === "Khánh Hòa" || location === "Thái Nguyên";
+      const isQualified =
+        !excludedLocation &&
+        usage === "personal" &&
+        year !== "older" &&
+        (need === "new" || need === "renew");
+
+      if (isQualified) {
+        const voucher = selectedQuoteVouchers.physical;
+        const baseEstimate = Math.max(vehicleValue * 0.0099, 5000000);
+        const estimate = voucher && voucher.discount > 0
+          ? baseEstimate * (1 - voucher.discount / 100)
+          : baseEstimate;
+        resultValue.textContent = `Từ ${Math.round(estimate).toLocaleString("vi-VN")}đ/năm`;
+        resultCopy.textContent =
+          `Đã ghi nhận yêu cầu${voucher ? ` cùng voucher ${voucher.code}` : ""}. Chuyên viên PVI sẽ xác nhận điều kiện ưu đãi, quyền lợi và mức phí chính thức.`;
+      } else {
+        resultValue.textContent = "Cần đánh giá thêm";
+        resultCopy.textContent =
+          "Thông tin hiện chưa thuộc nhóm ưu tiên của chương trình. PVI sẽ kiểm tra và phản hồi phương án phù hợp.";
+      }
+
+      result.classList.add("show");
+      result.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+
+    document.getElementById("finish-physical").addEventListener("click", () => {
+      showScreen("home");
+      showToast("Yêu cầu tư vấn đã được ghi nhận.");
+    });
+
+    document.getElementById("submit-claim").addEventListener("click", () => {
+      closeModal("claim-modal");
+      showScreen("claims");
+      showToast("Đã tạo bản khai báo nháp HSBT-260726.");
+    });
+
+    document.getElementById("submit-booking").addEventListener("click", () => {
+      closeModal("booking-modal");
+      showToast("Đã ghi nhận lịch tư vấn. Chuyên viên sẽ xác nhận qua Zalo.");
+    });
+  </script>
+</body>
+</html>
